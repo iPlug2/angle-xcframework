@@ -1,0 +1,71 @@
+jobs:
+- job: Build
+  displayName: 'Build'
+  timeoutInMinutes: 120
+  pool:
+    vmImage: macos-13
+
+  steps:
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download iOS Artifacts'
+    inputs:
+      artifactName: 'iOS.arm64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download iOS Simulator (arm64) Artifacts'
+    inputs:
+      artifactName: 'Simulator.arm64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download iOS Simulator (x64) Artifacts'
+    inputs:
+      artifactName: 'Simulator.x64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download Mac (arm64) Artifacts'
+    inputs:
+      artifactName: 'Mac.arm64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download Mac (x64) Artifacts'
+    inputs:
+      artifactName: 'Mac.x64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download Catalyst (arm64) Artifacts'
+    inputs:
+      artifactName: 'Catalyst.arm64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download Catalyst (x64) Artifacts'
+    inputs:
+      artifactName: 'Catalyst.x64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - script: |
+      tar -xzvf iOS.arm64.tar.gz
+      tar -xzvf Simulator.arm64.tar.gz
+      tar -xzvf Simulator.x64.tar.gz
+      tar -xzvf Mac.arm64.tar.gz
+      tar -xzvf Mac.x64.tar.gz
+      tar -xzvf Catalyst.arm64.tar.gz
+      tar -xzvf Catalyst.x64.tar.gz
+      cp build_xcframework.sh out/
+      sh out/build_xcframework.sh
+      mkdir output
+      mv out/libEGL.xcframework output/
+      mv out/libGLESv2.xcframework output/
+      tar -czvf angle.tar.gz output/
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact'
+    inputs:
+      PathtoPublish: 'angle.tar.gz'
+      ArtifactName: 'XCFramework'
+      publishLocation: Container

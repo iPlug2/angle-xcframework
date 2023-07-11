@@ -1,0 +1,138 @@
+diff --git a/BUILD.gn b/BUILD.gn
+index 964d511238..355a0e3e35 100644
+--- a/BUILD.gn
++++ b/BUILD.gn
+@@ -648,6 +648,7 @@ angle_static_library("angle_gpu_info_util") {
+ 
+   if (is_apple) {
+     frameworks = [
++      "Foundation.framework",
+       "IOKit.framework",
+       "CoreFoundation.framework",
+       "CoreGraphics.framework",
+@@ -657,12 +658,12 @@ angle_static_library("angle_gpu_info_util") {
+     } else if (angle_enable_cgl) {
+       frameworks += [ "OpenGL.framework" ]
+     }
+-    if (is_mac || angle_enable_cgl) {
++    if (is_mac || angle_enable_cgl || (is_ios && target_environment == "catalyst")) {
+       sources += libangle_gpu_info_util_mac_sources
+-    }
+-    if (is_ios && !angle_enable_cgl) {
++    } else if (is_ios) {
+       sources += libangle_gpu_info_util_ios_sources
+     }
++    defines += [ "GL_SILENCE_DEPRECATION" ]
+   }
+ }
+ 
+diff --git a/src/common/system_utils_mac.cpp b/src/common/system_utils_mac.cpp
+index 2c48a7eb04..18d0b32313 100644
+--- a/src/common/system_utils_mac.cpp
++++ b/src/common/system_utils_mac.cpp
+@@ -23,6 +23,6 @@ namespace angle
+ {
+ const char *GetSharedLibraryExtension()
+ {
+-    return "dylib";
++    return "framework";
+ }
+ }  // namespace angle
+diff --git a/src/common/system_utils_posix.cpp b/src/common/system_utils_posix.cpp
+index 17cfc912a1..f333c0ee2a 100644
+--- a/src/common/system_utils_posix.cpp
++++ b/src/common/system_utils_posix.cpp
+@@ -197,7 +197,12 @@ void *OpenSystemLibraryWithExtensionAndGetError(const char *libraryName,
+     std::string directory;
+     if (searchType == SearchType::ModuleDir)
+     {
+-#if ANGLE_PLATFORM_IOS_FAMILY
++#if ANGLE_PLATFORM_MACOS || ANGLE_PLATFORM_MACCATALYST
++        // On macOS, shared libraries must be loaded from within the app bundle, in a directory
++        // next to the executable directory
++        directory = GetExecutableDirectory();
++        directory = directory.substr(0, directory.find_last_of('/')) + "/Frameworks/";
++#elif ANGLE_PLATFORM_IOS_FAMILY
+         // On iOS, shared libraries must be loaded from within the app bundle.
+         directory = GetExecutableDirectory() + "/Frameworks/";
+ #elif ANGLE_PLATFORM_FUCHSIA
+diff --git a/src/gpu_info_util/SystemInfo_macos.mm b/src/gpu_info_util/SystemInfo_macos.mm
+index f4d15c3302..60f59a2241 100644
+--- a/src/gpu_info_util/SystemInfo_macos.mm
++++ b/src/gpu_info_util/SystemInfo_macos.mm
+@@ -14,10 +14,22 @@
+ 
+ #include "common/gl/cgl/FunctionsCGL.h"
+ 
+-#if !defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 120000
+-#    define HAVE_MAIN_PORT_DEFAULT 1
++#if defined(ANGLE_PLATFORM_MACOS)
++
++#    if !defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 120000
++#        define HAVE_MAIN_PORT_DEFAULT 1
++#    else
++#        define HAVE_MAIN_PORT_DEFAULT 0
++#    endif
++
+ #else
+-#    define HAVE_MAIN_PORT_DEFAULT 0
++
++#    if !defined(__IPHONE_OS_VERSION_MIN_REQUIRED) || __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
++#        define HAVE_MAIN_PORT_DEFAULT 1
++#    else
++#        define HAVE_MAIN_PORT_DEFAULT 0
++#    endif
++
+ #endif
+ 
+ namespace angle
+@@ -268,7 +280,7 @@ uint64_t GetGpuIDFromDisplayID(uint32_t displayID)
+ // Used with permission.
+ uint64_t GetGpuIDFromOpenGLDisplayMask(uint32_t displayMask)
+ {
+-    if (@available(macOS 10.13, *))
++    if (@available(macOS 10.13, macCatalyst 13.0, *))
+     {
+         GLint numRenderers              = 0;
+         CGLRendererInfoObj rendererInfo = nullptr;
+@@ -315,7 +327,7 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
+ {
+ #if defined(ANGLE_PLATFORM_MACOS)
+     // On macOS, the following code is only supported since 10.13.
+-    if (@available(macOS 10.13, *))
++    if (@available(macOS 10.13, macCatalyst 13.0, *))
+ #endif
+     {
+         // Get a matching dictionary for the IOGraphicsAccelerator2
+@@ -363,7 +375,9 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
+ 
+         return vendorId;
+     }
++#if defined(ANGLE_PLATFORM_MACOS)
+     return 0;
++#endif
+ }
+ 
+ bool GetSystemInfo_mac(SystemInfo *info)
+@@ -387,7 +401,7 @@ bool GetSystemInfo_mac(SystemInfo *info)
+ 
+     // Then override the activeGPUIndex field of info to reflect the current
+     // GPU instead of the non-intel GPU
+-    if (@available(macOS 10.13, *))
++    if (@available(macOS 10.13, macCatalyst 13.0, *))
+     {
+         ForceGPUSwitchIndex(info);
+     }
+diff --git a/src/libGLESv2.gni b/src/libGLESv2.gni
+index 532436cb49..ce2c08d831 100644
+--- a/src/libGLESv2.gni
++++ b/src/libGLESv2.gni
+@@ -121,7 +121,7 @@ if (is_apple) {
+     "src/common/system_utils_apple.cpp",
+     "src/common/system_utils_posix.cpp",
+   ]
+-  if (is_mac) {
++  if (is_mac || (is_ios && target_environment == "catalyst")) {
+     libangle_common_sources += [
+       "src/common/gl/cgl/FunctionsCGL.cpp",
+       "src/common/gl/cgl/FunctionsCGL.h",

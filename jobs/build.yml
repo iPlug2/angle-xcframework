@@ -1,0 +1,23 @@
+jobs:
+- job: Build
+  displayName: 'Build'
+  timeoutInMinutes: 120
+  pool:
+    vmImage: macos-13
+
+  variables:
+    platform: ${{ parameters.platform }}
+    arch: ${{ parameters.arch }}
+    xcodeVersion: ${{ '14.3.1' }}
+
+  steps:
+  - script: |
+      sh build.sh $(platform) $(arch)
+    displayName: 'Build'
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact'
+    inputs:
+      PathtoPublish: 'angle/$(platform).$(arch).tar.gz'
+      ArtifactName: '$(platform).$(arch)'
+      publishLocation: Container

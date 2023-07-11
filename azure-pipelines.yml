@@ -1,0 +1,75 @@
+stages:
+- stage: iOS
+  displayName: 'iOS'
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: iOS
+      arch: arm64
+
+- stage: iOSSimulatorARM64
+  displayName: 'iOS Simulator (arm64)'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: Simulator
+      arch: arm64
+
+- stage: iOSSimulatorX64
+  displayName: 'iOS Simulator (x64)'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: Simulator
+      arch: x64
+
+- stage: MacARM64
+  displayName: 'Mac (arm64)'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: Mac
+      arch: arm64
+
+- stage: MacX64
+  displayName: 'Mac (x64)'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: Mac
+      arch: x64
+
+- stage: CatalystARM64
+  displayName: 'Catalyst (arm64)'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: Catalyst
+      arch: arm64
+
+- stage: CatalystX64
+  displayName: 'Catalyst (x64)'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: Catalyst
+      arch: x64
+
+- stage: XCFramework
+  displayName: 'Generate XCFramework'
+  dependsOn:
+  - iOS
+  - iOSSimulatorARM64
+  - iOSSimulatorX64
+  - MacARM64
+  - MacX64
+  - CatalystARM64
+  - CatalystX64
+  jobs:
+  - template: jobs/xcframework.yml

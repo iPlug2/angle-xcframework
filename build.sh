@@ -88,4 +88,5 @@ build_angle $1 $2
 complete_framework $1 $2
 check_success
 
+rm -rf out/$1/$2/obj
 tar -czvf $1.$2.tar.gz out/

@@ -58,10 +58,9 @@ jobs:
       tar -xzvf Catalyst.x64/Catalyst.x64.tar.gz
       cp build_xcframework.sh out/
       sh out/build_xcframework.sh
-      mkdir output
-      mv out/libEGL.xcframework output/
-      mv out/libGLESv2.xcframework output/
-      tar -czvf angle.tar.gz output/
+      mv out/libEGL.xcframework .
+      mv out/libGLESv2.xcframework .
+      tar -czvf angle.tar.gz *.xcframework
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact'

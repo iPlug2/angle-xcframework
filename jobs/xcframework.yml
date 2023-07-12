@@ -49,13 +49,13 @@ jobs:
       downloadPath: '$(System.DefaultWorkingDirectory)'
 
   - script: |
-      tar -xzvf iOS.arm64/iOS.arm64.tar.gz
-      tar -xzvf Simulator.arm64/Simulator.arm64.tar.gz
-      tar -xzvf Simulator.x64/Simulator.x64.tar.gz
-      tar -xzvf Mac.arm64/Mac.arm64.tar.gz
-      tar -xzvf Mac.x64/Mac.x64.tar.gz
-      tar -xzvf Catalyst.arm64/Catalyst.arm64.tar.gz
-      tar -xzvf Catalyst.x64/Catalyst.x64.tar.gz
+      tar -xzvf iOS.arm64/angle.tar.gz
+      tar -xzvf Simulator.arm64/angle.tar.gz
+      tar -xzvf Simulator.x64/angle.tar.gz
+      tar -xzvf Mac.arm64/angle.tar.gz
+      tar -xzvf Mac.x64/angle.tar.gz
+      tar -xzvf Catalyst.arm64/angle.tar.gz
+      tar -xzvf Catalyst.x64/angle.tar.gz
       cp build_xcframework.sh out/
       sh out/build_xcframework.sh
       mv out/libEGL.xcframework .

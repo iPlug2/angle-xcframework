@@ -18,6 +18,6 @@ jobs:
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact'
     inputs:
-      PathtoPublish: 'angle/$(platform).$(arch).tar.gz'
+      PathtoPublish: 'angle/angle.tar.gz'
       ArtifactName: '$(platform).$(arch)'
       publishLocation: Container

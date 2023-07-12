@@ -12,6 +12,7 @@ jobs:
 
   steps:
   - script: |
+      sudo xcode-select -s /Applications/Xcode_$(xcodeVersion).app
       sh build.sh $(platform) $(arch)
     displayName: 'Build'
 

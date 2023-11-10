@@ -1,8 +1,8 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 964d511238..355a0e3e35 100644
+index e38b2bef89..e3c04a220f 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -648,6 +648,7 @@ angle_static_library("angle_gpu_info_util") {
+@@ -666,6 +666,7 @@ angle_static_library("angle_gpu_info_util") {
  
    if (is_apple) {
      frameworks = [
@@ -10,7 +10,7 @@ index 964d511238..355a0e3e35 100644
        "IOKit.framework",
        "CoreFoundation.framework",
        "CoreGraphics.framework",
-@@ -657,12 +658,12 @@ angle_static_library("angle_gpu_info_util") {
+@@ -675,12 +676,12 @@ angle_static_library("angle_gpu_info_util") {
      } else if (angle_enable_cgl) {
        frameworks += [ "OpenGL.framework" ]
      }
@@ -124,10 +124,10 @@ index f4d15c3302..60f59a2241 100644
          ForceGPUSwitchIndex(info);
      }
 diff --git a/src/libGLESv2.gni b/src/libGLESv2.gni
-index 532436cb49..ce2c08d831 100644
+index e110555c83..d4936e8d56 100644
 --- a/src/libGLESv2.gni
 +++ b/src/libGLESv2.gni
-@@ -121,7 +121,7 @@ if (is_apple) {
+@@ -123,7 +123,7 @@ if (is_apple) {
      "src/common/system_utils_apple.cpp",
      "src/common/system_utils_posix.cpp",
    ]

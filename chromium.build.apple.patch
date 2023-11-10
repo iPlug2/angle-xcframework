@@ -1,8 +1,22 @@
+diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
+index bf3042fc7..4a5a82810 100644
+--- a/config/compiler/BUILD.gn
++++ b/config/compiler/BUILD.gn
+@@ -1876,9 +1876,6 @@ config("default_warnings") {
+ 
+           # TODO(crbug.com/1494809): Evaluate and possibly enable.
+           "-Wno-vla-extension",
+-
+-          # TODO(https://crbug.com/1490607): Fix and re-enable.
+-          "-Wno-thread-safety-reference-return",
+         ]
+       }
+     }
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index f0b85cc65..dad127b6a 100644
+index 4360f328c..888ba43bc 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
-@@ -247,6 +247,14 @@ group("xctest") {
+@@ -252,6 +252,14 @@ group("xctest") {
  _xctrunner_path =
      "$ios_sdk_platform_path/Developer/Library/Xcode/Agents/XCTRunner.app"
  
@@ -17,10 +31,10 @@ index f0b85cc65..dad127b6a 100644
  # When building with Goma RBE, $ios_sdk_platform_path corresponds to a symlink
  # below $root_build_dir that points to the real SDK to use. Because the files
  # are below $root_build_dir, it is not possible to list them as a target input
-@@ -260,15 +268,24 @@ _xctrunner_path =
+@@ -265,15 +273,24 @@ _xctrunner_path =
  # To workaround this, add a target that pretends to create those files
  # (but does nothing). See https://crbug.com/1061487 for why this is needed.
- if (use_system_xcode && (use_goma || use_remoteexec)) {
+ if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
 -  action("copy_xctrunner_app") {
 -    testonly = true
 -    script = "//build/noop.py"
@@ -46,7 +60,7 @@ index f0b85cc65..dad127b6a 100644
  }
  
  # When creating the test runner for an XCUITest, the arm64e slice of the binary
-@@ -277,7 +294,7 @@ if (use_system_xcode && (use_goma || use_remoteexec)) {
+@@ -282,7 +299,7 @@ if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
  action("xctest_runner_without_arm64e") {
    testonly = true
    script = "//build/config/ios/strip_arm64e.py"
@@ -56,10 +70,10 @@ index f0b85cc65..dad127b6a 100644
    args = [
      "--output",
 diff --git a/config/ios/rules.gni b/config/ios/rules.gni
-index c41850715..671f8e6f2 100644
+index be2737de0..d77f6be90 100644
 --- a/config/ios/rules.gni
 +++ b/config/ios/rules.gni
-@@ -2001,9 +2001,13 @@ template("ios_xcuitest_test_runner_bundle") {
+@@ -1705,9 +1705,13 @@ template("ios_xcuitest_test_runner_bundle") {
      testonly = true
      script = "//build/apple/plist_util.py"
  
@@ -75,7 +89,7 @@ index c41850715..671f8e6f2 100644
        # NOTE: The XCTRunnerAddition+Info.plist must come after the Info.plist
        # because it overrides the values under "CFBundleIdentifier" and
        # "CFBundleName".
-@@ -2048,7 +2052,11 @@ template("ios_xcuitest_test_runner_bundle") {
+@@ -1752,7 +1756,11 @@ template("ios_xcuitest_test_runner_bundle") {
      testonly = true
      visibility = [ ":$_target_name" ]
  

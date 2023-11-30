@@ -72,7 +72,7 @@ index 4795d8f7b1..23fb39721f 100644
                      if ([device supportsFamily:MTLGPUFamilyMac2])
                          gpuFamilySufficient = true;
 diff --git a/src/common/platform.h b/src/common/platform.h
-index edadfcde62..a96f65c1e5 100644
+index d7c9caf680..99c7f851de 100644
 --- a/src/common/platform.h
 +++ b/src/common/platform.h
 @@ -151,6 +151,8 @@
@@ -85,7 +85,7 @@ index edadfcde62..a96f65c1e5 100644
  #    endif
  #    // Identify Metal API >= what shipped on macOS Catalina.
 diff --git a/src/libANGLE/renderer/metal/DisplayMtl.mm b/src/libANGLE/renderer/metal/DisplayMtl.mm
-index a860b6bbc2..986292a966 100644
+index b93adbbe07..445db45414 100644
 --- a/src/libANGLE/renderer/metal/DisplayMtl.mm
 +++ b/src/libANGLE/renderer/metal/DisplayMtl.mm
 @@ -769,7 +769,7 @@ void DisplayMtl::ensureCapsInitialized() const
@@ -165,7 +165,7 @@ index 5f3f10a86f..573f1b4e20 100644
          // If depth/stencil attachment has depth & stencil bits, then depth & stencil must not have
          // separate attachment. i.e. They must be the same texture or one of them has no
 diff --git a/src/libANGLE/renderer/metal/mtl_command_buffer.mm b/src/libANGLE/renderer/metal/mtl_command_buffer.mm
-index 145400aec7..537f2bd32c 100644
+index c5b9b6a467..6867e45ebc 100644
 --- a/src/libANGLE/renderer/metal/mtl_command_buffer.mm
 +++ b/src/libANGLE/renderer/metal/mtl_command_buffer.mm
 @@ -380,7 +380,7 @@ inline void UseResourceCmd(id<MTLRenderCommandEncoder> encoder, IntermediateComm
@@ -177,6 +177,24 @@ index 145400aec7..537f2bd32c 100644
      {
          [encoder useResource:resource usage:usage stages:stages];
      }
+@@ -403,7 +403,7 @@ inline void MemoryBarrierCmd(id<MTLRenderCommandEncoder> encoder, IntermediateCo
+     ANGLE_UNUSED_VARIABLE(after);
+     ANGLE_UNUSED_VARIABLE(before);
+ #if defined(__MAC_10_14) && (TARGET_OS_OSX || TARGET_OS_MACCATALYST)
+-    if (ANGLE_APPLE_AVAILABLE_XC(10.14, 13.1))
++    if (ANGLE_APPLE_AVAILABLE_XC(10.14, 13.1, 1.0))
+     {
+         [encoder memoryBarrierWithScope:scope afterStages:after beforeStages:before];
+     }
+@@ -419,7 +419,7 @@ inline void MemoryBarrierWithResourceCmd(id<MTLRenderCommandEncoder> encoder,
+     ANGLE_UNUSED_VARIABLE(after);
+     ANGLE_UNUSED_VARIABLE(before);
+ #if defined(__MAC_10_14) && (TARGET_OS_OSX || TARGET_OS_MACCATALYST)
+-    if (ANGLE_APPLE_AVAILABLE_XC(10.14, 13.1))
++    if (ANGLE_APPLE_AVAILABLE_XC(10.14, 13.1, 1.0))
+     {
+         [encoder memoryBarrierWithResources:&resource
+                                       count:1
 diff --git a/src/libANGLE/renderer/metal/mtl_format_table_autogen.mm b/src/libANGLE/renderer/metal/mtl_format_table_autogen.mm
 index f11e0150a7..c586c799a3 100644
 --- a/src/libANGLE/renderer/metal/mtl_format_table_autogen.mm
@@ -253,7 +271,7 @@ index 829539a2e8..5052a13596 100644
  #else
          desc.resourceOptions = MTLResourceStorageModeManaged;
 diff --git a/src/libANGLE/renderer/metal/mtl_utils.mm b/src/libANGLE/renderer/metal/mtl_utils.mm
-index 14bc3a52fb..8948ec8211 100644
+index 14bc3a52fb..18aa6a9828 100644
 --- a/src/libANGLE/renderer/metal/mtl_utils.mm
 +++ b/src/libANGLE/renderer/metal/mtl_utils.mm
 @@ -135,7 +135,7 @@ void StartFrameCapture(id<MTLDevice> metalDevice, id<MTLCommandQueue> metalCmdQu
@@ -274,6 +292,15 @@ index 14bc3a52fb..8948ec8211 100644
          {
              auto captureDescriptor = mtl::adoptObjCObj([[MTLCaptureDescriptor alloc] init]);
              captureDescriptor.get().captureObject = metalDevice;
+@@ -759,7 +759,7 @@ uint32_t GetDeviceVendorId(id<MTLDevice> metalDevice)
+ {
+     uint32_t vendorId = 0;
+ #if TARGET_OS_OSX || TARGET_OS_MACCATALYST
+-    if (ANGLE_APPLE_AVAILABLE_XC(10.13, 13.1))
++    if (ANGLE_APPLE_AVAILABLE_XC(10.13, 13.1, 1.0))
+     {
+         vendorId = GetDeviceVendorIdFromIOKit(metalDevice);
+     }
 @@ -789,7 +789,7 @@ static MTLLanguageVersion GetUserSetOrHighestMSLVersion(const MTLLanguageVersion
                  switch (minor)
                  {

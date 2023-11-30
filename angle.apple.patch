@@ -1,8 +1,8 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index e38b2bef89..e3c04a220f 100644
+index 5cb322eecf..a72313b572 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -666,6 +666,7 @@ angle_static_library("angle_gpu_info_util") {
+@@ -667,6 +667,7 @@ angle_static_library("angle_gpu_info_util") {
  
    if (is_apple) {
      frameworks = [
@@ -10,7 +10,7 @@ index e38b2bef89..e3c04a220f 100644
        "IOKit.framework",
        "CoreFoundation.framework",
        "CoreGraphics.framework",
-@@ -675,12 +676,12 @@ angle_static_library("angle_gpu_info_util") {
+@@ -676,12 +677,12 @@ angle_static_library("angle_gpu_info_util") {
      } else if (angle_enable_cgl) {
        frameworks += [ "OpenGL.framework" ]
      }
@@ -26,6 +26,19 @@ index e38b2bef89..e3c04a220f 100644
    }
  }
  
+diff --git a/src/common/system_utils.cpp b/src/common/system_utils.cpp
+index 44921be4ed..be73ef8e5c 100644
+--- a/src/common/system_utils.cpp
++++ b/src/common/system_utils.cpp
+@@ -226,7 +226,7 @@ void *OpenSystemLibraryAndGetError(const char *libraryName,
+     {
+         libraryWithExtension += dotExtension;
+     }
+-#if ANGLE_PLATFORM_IOS_FAMILY
++#ifdef ANGLE_PLATFORM_APPLE
+     // On iOS, libraryWithExtension is a directory in which the library resides.
+     // The actual library name doesn't have an extension at all.
+     // E.g. "libEGL.framework/libEGL"
 diff --git a/src/common/system_utils_mac.cpp b/src/common/system_utils_mac.cpp
 index 2c48a7eb04..18d0b32313 100644
 --- a/src/common/system_utils_mac.cpp

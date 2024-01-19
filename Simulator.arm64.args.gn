@@ -16,3 +16,7 @@ angle_enable_glsl = true
 angle_enable_essl = true
 angle_build_all = false
 angle_enable_apple_translator_workarounds = true
+clang_base_path = "/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr"
+clang_use_chrome_plugins = false
+use_lld = false
+angle_enable_abseil = false

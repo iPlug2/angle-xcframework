@@ -8,9 +8,15 @@ jobs:
   variables:
     platform: ${{ parameters.platform }}
     arch: ${{ parameters.arch }}
-    xcodeVersion: ${{ '14.3.1' }}
+    xcodeVersion: ${{ '15.2' }}
 
   steps:
+  - script: |
+      TO_REPLACE="Xcode.app"
+      NEW_STRING="Xcode_$(xcodeVersion).app"
+      sed -ie "s#${TO_REPLACE}#${NEW_STRING}#g" *.gn
+    displayName: 'Replace Strings'
+
   - script: |
       sudo xcode-select -s /Applications/Xcode_$(xcodeVersion).app
       sh build.sh $(platform) $(arch)

@@ -1,6 +1,7 @@
 stages:
 - stage: iOS
   displayName: 'iOS'
+  dependsOn: []
   jobs:
   - template: jobs/build.yml
     parameters:
@@ -23,6 +24,33 @@ stages:
   - template: jobs/build.yml
     parameters:
       platform: Simulator
+      arch: x64
+
+- stage: visionOS
+  displayName: 'visionOS'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: VisionOS
+      arch: arm64
+
+- stage: visionOSSimulatorARM64
+  displayName: 'visionOS Simulator (arm64)'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: VisionOSSimulator
+      arch: arm64
+
+- stage: visionOSSimulatorX64
+  displayName: 'visionOS Simulator (x64)'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: VisionOSSimulator
       arch: x64
 
 - stage: MacARM64
@@ -67,6 +95,9 @@ stages:
   - iOS
   - iOSSimulatorARM64
   - iOSSimulatorX64
+  - visionOS
+  - visionOSSimulatorARM64
+  - visionOSSimulatorX64
   - MacARM64
   - MacX64
   - CatalystARM64

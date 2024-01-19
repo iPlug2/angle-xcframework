@@ -1,8 +1,8 @@
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 275456980..72ca08ea4 100644
+index 275456980..d1fc166e5 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -1874,9 +1874,6 @@ config("default_warnings") {
+@@ -1874,17 +1874,7 @@ config("default_warnings") {
  
          # TODO(crbug.com/1494809): Evaluate and possibly enable.
          "-Wno-vla-extension",
@@ -10,8 +10,16 @@ index 275456980..72ca08ea4 100644
 -        # TODO(https://crbug.com/1490607): Fix and re-enable.
 -        "-Wno-thread-safety-reference-return",
        ]
+-
+-      if (!is_nacl) {
+-        cflags_cc += [
+-          # TODO(https://crbug.com/1513724): Fix and re-enable.
+-          "-Wno-c++11-narrowing-const-reference",
+-        ]
+-      }
+     }
  
-       if (!is_nacl) {
+     # Some builders, such as Cronet, use a different version of Clang than
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
 index 4360f328c..888ba43bc 100644
 --- a/config/ios/BUILD.gn

@@ -5,6 +5,9 @@ jobs:
   pool:
     vmImage: macos-13
 
+  variables:
+    xcodeVersion: ${{ '15.2' }}
+
   steps:
   - task: DownloadBuildArtifacts@0
     displayName: 'Download iOS Artifacts'
@@ -22,6 +25,24 @@ jobs:
     displayName: 'Download iOS Simulator (x64) Artifacts'
     inputs:
       artifactName: 'Simulator.x64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download visionOS Artifacts'
+    inputs:
+      artifactName: 'VisionOS.arm64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download visionOS Simulator (arm64) Artifacts'
+    inputs:
+      artifactName: 'VisionOSSimulator.arm64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download visionOS Simulator (x64) Artifacts'
+    inputs:
+      artifactName: 'VisionOSSimulator.x64'
       downloadPath: '$(System.DefaultWorkingDirectory)'
 
   - task: DownloadBuildArtifacts@0
@@ -49,9 +70,13 @@ jobs:
       downloadPath: '$(System.DefaultWorkingDirectory)'
 
   - script: |
+      sudo xcode-select -s /Applications/Xcode_$(xcodeVersion).app
       tar -xzvf iOS.arm64/angle.tar.gz
       tar -xzvf Simulator.arm64/angle.tar.gz
       tar -xzvf Simulator.x64/angle.tar.gz
+      tar -xzvf VisionOS.arm64/angle.tar.gz
+      tar -xzvf VisionOSSimulator.arm64/angle.tar.gz
+      tar -xzvf VisionOSSimulator.x64/angle.tar.gz
       tar -xzvf Mac.arm64/angle.tar.gz
       tar -xzvf Mac.x64/angle.tar.gz
       tar -xzvf Catalyst.arm64/angle.tar.gz
@@ -61,6 +86,7 @@ jobs:
       mv out/libEGL.xcframework .
       mv out/libGLESv2.xcframework .
       tar -czvf angle.tar.gz *.xcframework
+    displayName: 'Build XCFramework'
 
   - task: PublishBuildArtifacts@1
     displayName: 'Publish Artifact'

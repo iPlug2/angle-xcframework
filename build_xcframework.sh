@@ -23,7 +23,12 @@ build_xcframwork()
   lipo -create Simulator/arm64/$1.framework/$1 Simulator/x64/$1.framework/$1 -o temp
   mv temp Simulator/Universal/$1.framework/$1
 
-  xcodebuild -create-xcframework -framework iOS/arm64/$1.framework -framework Catalyst/Universal/$1.framework -framework Simulator/Universal/$1.framework -framework Mac/Universal/$1.framework -output $1.xcframework
+  mkdir -p VisionOSSimulator/Universal
+  cp -a VisionOSSimulator/x64/$1.framework VisionOSSimulator/Universal
+  lipo -create VisionOSSimulator/arm64/$1.framework/$1 VisionOSSimulator/x64/$1.framework/$1 -o temp
+  mv temp VisionOSSimulator/Universal/$1.framework/$1
+
+  xcodebuild -create-xcframework -framework iOS/arm64/$1.framework -framework VisionOS/arm64/$1.framework -framework VisionOSSimulator/Universal/$1.framework -framework Catalyst/Universal/$1.framework -framework Simulator/Universal/$1.framework -framework Mac/Universal/$1.framework -output $1.xcframework
 }
 
 build_xcframwork "libEGL"

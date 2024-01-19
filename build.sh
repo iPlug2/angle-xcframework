@@ -29,9 +29,17 @@ echo "Apply Apple ANGLE patch"
 git apply ../angle.apple.patch --ignore-whitespace --whitespace=nowarn
 check_success
 
+echo "Apply visionOS ANGLE patch"
+git apply ../angle.visionos.patch --ignore-whitespace --whitespace=nowarn
+check_success
+
 cd build
 echo "Apply Apple chromium build patch"
 git apply ../../chromium.build.apple.patch --ignore-whitespace --whitespace=nowarn
+check_success
+
+echo "Apply visionOS chromium build patch"
+git apply ../../chromium.build.visionos.patch --ignore-whitespace --whitespace=nowarn
 check_success
 
 cd ..

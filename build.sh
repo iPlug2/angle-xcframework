@@ -71,6 +71,15 @@ build_angle()
     fi
     sh ../generate_info_plist.sh `pwd`/../Info.plist `pwd`/out/$1/$2/libEGL.framework/Versions/A/Resources/Info.plist org.chromium.ost.libEGL libEGL $MIN_MAC_VERSION
     sh ../generate_info_plist.sh `pwd`/../Info.plist `pwd`/out/$1/$2/libGLESv2.framework/Versions/A/Resources/Info.plist org.chromium.ost.libGLESv2 libGLESv2 $MIN_MAC_VERSION
+
+    plutil -insert CFBundleShortVersionString -string 1.0 `pwd`/out/$1/$2/libGLESv2.framework/Versions/A/Resources/Info.plist
+    plutil -insert CFBundleShortVersionString -string 1.0 `pwd`/out/$1/$2/libEGL.framework/Versions/A/Resources/Info.plist
+  elif [ "$1" == "Catalyst" ]; then
+    plutil -insert CFBundleShortVersionString -string 1.0 `pwd`/out/$1/$2/libGLESv2.framework/Versions/A/Resources/Info.plist
+    plutil -insert CFBundleShortVersionString -string 1.0 `pwd`/out/$1/$2/libEGL.framework/Versions/A/Resources/Info.plist
+  else
+    plutil -insert CFBundleShortVersionString -string 1.0 `pwd`/out/$1/$2/libGLESv2.framework/Info.plist
+    plutil -insert CFBundleShortVersionString -string 1.0 `pwd`/out/$1/$2/libEGL.framework/Info.plist
   fi
 }
 

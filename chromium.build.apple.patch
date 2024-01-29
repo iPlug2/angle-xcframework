@@ -1,8 +1,18 @@
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 275456980..d1fc166e5 100644
+index a91928eea..cb51b0955 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -1874,17 +1874,7 @@ config("default_warnings") {
+@@ -494,9 +494,6 @@ config("compiler") {
+     # linker_driver.py script runs dsymutil itself, which is set to be the
+     # linker for Rust targets as well.
+     rustflags += [ "-Csplit-debuginfo=unpacked" ]
+-
+-    # TODO(crbug.com/1519899): Figure out how to remove this.
+-    cflags += [ "-fno-define-target-os-macros" ]
+   }
+ 
+   # Linux/Android/Fuchsia common flags setup.
+@@ -1877,17 +1874,7 @@ config("default_warnings") {
  
          # TODO(crbug.com/1494809): Evaluate and possibly enable.
          "-Wno-vla-extension",

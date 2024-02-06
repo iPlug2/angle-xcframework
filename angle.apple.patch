@@ -1,8 +1,8 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 5cb322eecf..a72313b572 100644
+index 1dc20fa1b4..a07011fcf5 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -667,6 +667,7 @@ angle_static_library("angle_gpu_info_util") {
+@@ -668,6 +668,7 @@ angle_static_library("angle_gpu_info_util") {
  
    if (is_apple) {
      frameworks = [
@@ -10,7 +10,7 @@ index 5cb322eecf..a72313b572 100644
        "IOKit.framework",
        "CoreFoundation.framework",
        "CoreGraphics.framework",
-@@ -676,12 +677,12 @@ angle_static_library("angle_gpu_info_util") {
+@@ -677,12 +678,12 @@ angle_static_library("angle_gpu_info_util") {
      } else if (angle_enable_cgl) {
        frameworks += [ "OpenGL.framework" ]
      }
@@ -70,11 +70,11 @@ index 17cfc912a1..f333c0ee2a 100644
          directory = GetExecutableDirectory() + "/Frameworks/";
  #elif ANGLE_PLATFORM_FUCHSIA
 diff --git a/src/gpu_info_util/SystemInfo_macos.mm b/src/gpu_info_util/SystemInfo_macos.mm
-index f4d15c3302..60f59a2241 100644
+index 553c675683..dfbfcc1e6a 100644
 --- a/src/gpu_info_util/SystemInfo_macos.mm
 +++ b/src/gpu_info_util/SystemInfo_macos.mm
-@@ -14,10 +14,22 @@
- 
+@@ -15,10 +15,22 @@
+ #include "common/apple_platform_utils.h"
  #include "common/gl/cgl/FunctionsCGL.h"
  
 -#if !defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 120000
@@ -99,7 +99,7 @@ index f4d15c3302..60f59a2241 100644
  #endif
  
  namespace angle
-@@ -268,7 +280,7 @@ uint64_t GetGpuIDFromDisplayID(uint32_t displayID)
+@@ -235,7 +247,7 @@ uint64_t GetGpuIDFromDisplayID(uint32_t displayID)
  // Used with permission.
  uint64_t GetGpuIDFromOpenGLDisplayMask(uint32_t displayMask)
  {
@@ -108,7 +108,7 @@ index f4d15c3302..60f59a2241 100644
      {
          GLint numRenderers              = 0;
          CGLRendererInfoObj rendererInfo = nullptr;
-@@ -315,7 +327,7 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
+@@ -282,7 +294,7 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
  {
  #if defined(ANGLE_PLATFORM_MACOS)
      // On macOS, the following code is only supported since 10.13.
@@ -117,7 +117,7 @@ index f4d15c3302..60f59a2241 100644
  #endif
      {
          // Get a matching dictionary for the IOGraphicsAccelerator2
-@@ -363,7 +375,9 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
+@@ -330,7 +342,9 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
  
          return vendorId;
      }
@@ -127,7 +127,7 @@ index f4d15c3302..60f59a2241 100644
  }
  
  bool GetSystemInfo_mac(SystemInfo *info)
-@@ -387,7 +401,7 @@ bool GetSystemInfo_mac(SystemInfo *info)
+@@ -358,7 +372,7 @@ bool GetSystemInfo_mac(SystemInfo *info)
  
      // Then override the activeGPUIndex field of info to reflect the current
      // GPU instead of the non-intel GPU
@@ -137,7 +137,7 @@ index f4d15c3302..60f59a2241 100644
          ForceGPUSwitchIndex(info);
      }
 diff --git a/src/libGLESv2.gni b/src/libGLESv2.gni
-index e110555c83..d4936e8d56 100644
+index 10565a1821..e131b21bb1 100644
 --- a/src/libGLESv2.gni
 +++ b/src/libGLESv2.gni
 @@ -123,7 +123,7 @@ if (is_apple) {

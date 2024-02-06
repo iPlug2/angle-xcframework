@@ -29,6 +29,10 @@ echo "Apply Apple ANGLE patch"
 git apply ../angle.apple.patch --ignore-whitespace --whitespace=nowarn
 check_success
 
+echo "Apply Flip-y ANGLE patch"
+git apply ../flip_y.patch --ignore-whitespace --whitespace=nowarn
+check_success
+
 echo "Apply visionOS ANGLE patch"
 git apply ../angle.visionos.patch --ignore-whitespace --whitespace=nowarn
 check_success

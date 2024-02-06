@@ -1,0 +1,67 @@
+diff --git a/src/libANGLE/renderer/metal/ContextMtl.mm b/src/libANGLE/renderer/metal/ContextMtl.mm
+index 92f6dd0837..35ed007fcf 100644
+--- a/src/libANGLE/renderer/metal/ContextMtl.mm
++++ b/src/libANGLE/renderer/metal/ContextMtl.mm
+@@ -1482,7 +1482,7 @@ ProgramExecutableImpl *ContextMtl::createProgramExecutable(const gl::ProgramExec
+ // Framebuffer creation
+ FramebufferImpl *ContextMtl::createFramebuffer(const gl::FramebufferState &state)
+ {
+-    return new FramebufferMtl(state, this, /* flipY */ false);
++    return new FramebufferMtl(state, this);
+ }
+ 
+ // Texture creation
+diff --git a/src/libANGLE/renderer/metal/DisplayMtl.mm b/src/libANGLE/renderer/metal/DisplayMtl.mm
+index 33f0303e54..cfde4651c5 100644
+--- a/src/libANGLE/renderer/metal/DisplayMtl.mm
++++ b/src/libANGLE/renderer/metal/DisplayMtl.mm
+@@ -943,6 +943,8 @@ void DisplayMtl::initializeExtensions() const
+     // Reset
+     mNativeExtensions = gl::Extensions();
+ 
++    mNativeExtensions.framebufferFlipYMESA = true;
++
+     // Enable this for simple buffer readback testing, but some functionality is missing.
+     // NOTE(hqle): Support full mapBufferRangeEXT extension.
+     mNativeExtensions.mapbufferOES                  = true;
+diff --git a/src/libANGLE/renderer/metal/FrameBufferMtl.h b/src/libANGLE/renderer/metal/FrameBufferMtl.h
+index f979c4849f..828945f4c4 100644
+--- a/src/libANGLE/renderer/metal/FrameBufferMtl.h
++++ b/src/libANGLE/renderer/metal/FrameBufferMtl.h
+@@ -29,7 +29,7 @@ class SurfaceMtl;
+ class FramebufferMtl : public FramebufferImpl
+ {
+   public:
+-    explicit FramebufferMtl(const gl::FramebufferState &state, ContextMtl *context, bool flipY);
++    explicit FramebufferMtl(const gl::FramebufferState &state, ContextMtl *context);
+     ~FramebufferMtl() override;
+     void destroy(const gl::Context *context) override;
+ 
+diff --git a/src/libANGLE/renderer/metal/FrameBufferMtl.mm b/src/libANGLE/renderer/metal/FrameBufferMtl.mm
+index 573f1b4e20..4f508bdf9d 100644
+--- a/src/libANGLE/renderer/metal/FrameBufferMtl.mm
++++ b/src/libANGLE/renderer/metal/FrameBufferMtl.mm
+@@ -56,11 +56,11 @@ const gl::InternalFormat &GetReadAttachmentInfo(const gl::Context *context,
+ }  // namespace
+ 
+ // FramebufferMtl implementation
+-FramebufferMtl::FramebufferMtl(const gl::FramebufferState &state, ContextMtl *context, bool flipY)
++FramebufferMtl::FramebufferMtl(const gl::FramebufferState &state, ContextMtl *context)
+     : FramebufferImpl(state),
+       mColorRenderTargets(context->getNativeCaps().maxColorAttachments, nullptr),
+       mBackbuffer(nullptr),
+-      mFlipY(flipY)
++      mFlipY(state.getFlipY())
+ {
+     reset();
+ }
+@@ -640,6 +640,9 @@ angle::Result FramebufferMtl::syncState(const gl::Context *context,
+     {
+         switch (dirtyBit)
+         {
++            case gl::Framebuffer::DIRTY_BIT_FLIP_Y:
++                mFlipY = mState.getFlipY();
++                break;
+             case gl::Framebuffer::DIRTY_BIT_DEPTH_ATTACHMENT:
+                 ANGLE_TRY(updateDepthRenderTarget(context));
+                 break;

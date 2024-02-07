@@ -19,7 +19,12 @@ jobs:
 
   - script: |
       sudo xcode-select -s /Applications/Xcode_$(xcodeVersion).app
-      sh build.sh $(platform) $(arch)
+      chmod +x build.sh
+      chmod +x bundle_in_framework.sh
+      chmod +x generate_info_plist.sh
+      chmod +x create_egl_headers.sh
+      chmod +x create_glesv2_headers.sh
+      ./build.sh $(platform) $(arch)
     displayName: 'Build'
 
   - task: PublishBuildArtifacts@1

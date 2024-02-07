@@ -63,22 +63,22 @@ build_angle()
   autoninja -j4 -C out/$1/$2/
   check_success
 
-  if [ "$1" == "Mac" ]; then
+  if [ "$1" = "Mac" ]; then
     cp ../bundle_in_framework.sh out/$1/$2/
     check_success
-    sh out/$1/$2/bundle_in_framework.sh
+    out/$1/$2/bundle_in_framework.sh
     check_success
-    if [ "$2" == "arm64" ]; then
+    if [ "$2" = "arm64" ]; then
       MIN_MAC_VERSION=11.0
     else
       MIN_MAC_VERSION=10.15
     fi
-    sh ../generate_info_plist.sh `pwd`/../Info.plist `pwd`/out/$1/$2/libEGL.framework/Versions/A/Resources/Info.plist org.chromium.ost.libEGL libEGL $MIN_MAC_VERSION
-    sh ../generate_info_plist.sh `pwd`/../Info.plist `pwd`/out/$1/$2/libGLESv2.framework/Versions/A/Resources/Info.plist org.chromium.ost.libGLESv2 libGLESv2 $MIN_MAC_VERSION
+    ../generate_info_plist.sh `pwd`/../Info.plist `pwd`/out/$1/$2/libEGL.framework/Versions/A/Resources/Info.plist org.chromium.ost.libEGL libEGL $MIN_MAC_VERSION
+    ../generate_info_plist.sh `pwd`/../Info.plist `pwd`/out/$1/$2/libGLESv2.framework/Versions/A/Resources/Info.plist org.chromium.ost.libGLESv2 libGLESv2 $MIN_MAC_VERSION
 
     plutil -insert CFBundleShortVersionString -string 1.0 `pwd`/out/$1/$2/libGLESv2.framework/Versions/A/Resources/Info.plist
     plutil -insert CFBundleShortVersionString -string 1.0 `pwd`/out/$1/$2/libEGL.framework/Versions/A/Resources/Info.plist
-  elif [ "$1" == "Catalyst" ]; then
+  elif [ "$1" = "Catalyst" ]; then
     plutil -insert CFBundleShortVersionString -string 1.0 `pwd`/out/$1/$2/libGLESv2.framework/Versions/A/Resources/Info.plist
     plutil -insert CFBundleShortVersionString -string 1.0 `pwd`/out/$1/$2/libEGL.framework/Versions/A/Resources/Info.plist
   else
@@ -89,9 +89,11 @@ build_angle()
 
 complete_framework()
 {
+  ../create_egl_headers.sh . ../resources/libEGL/Headers
+  ../create_glesv2_headers.sh . ../resources/libGLESv2/Headers
   for FRAMEWORK in 'libEGL' 'libGLESv2';
   do
-    if [ "$1" == "Mac" ] || [ "$1" == "Catalyst" ]; then
+    if [ "$1" = "Mac" ] || [ "$1" = "Catalyst" ]; then
       cp -r ../resources/$FRAMEWORK/Headers out/$1/$2/$FRAMEWORK.framework/Versions/A
       cp -r ../resources/$FRAMEWORK/Modules out/$1/$2/$FRAMEWORK.framework/Versions/A
       cd out/$1/$2/$FRAMEWORK.framework

@@ -81,8 +81,9 @@ jobs:
       tar -xzvf Mac.x64/angle.tar.gz
       tar -xzvf Catalyst.arm64/angle.tar.gz
       tar -xzvf Catalyst.x64/angle.tar.gz
+      chmod +x build_xcframework.sh
       cp build_xcframework.sh out/
-      sh out/build_xcframework.sh
+      out/build_xcframework.sh
       mv out/libEGL.xcframework .
       mv out/libGLESv2.xcframework .
       tar -czvf angle.tar.gz *.xcframework

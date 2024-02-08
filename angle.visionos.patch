@@ -1,8 +1,8 @@
 diff --git a/src/common/apple_platform_utils.h b/src/common/apple_platform_utils.h
-index 0676136a2e..1a7d88b0a2 100644
+index 23c27eaee1..8888fb1acc 100644
 --- a/src/common/apple_platform_utils.h
 +++ b/src/common/apple_platform_utils.h
-@@ -18,30 +18,30 @@
+@@ -20,30 +20,30 @@
  #if TARGET_OS_MACCATALYST
  // ANGLE_APPLE_AVAILABLE_XCI: check if either of the 3 platforms (OSX/Catalyst/iOS) min verions is
  // available:
@@ -47,10 +47,10 @@ index 0676136a2e..1a7d88b0a2 100644
  #if TARGET_OS_IPHONE
  #    if !defined(__IPHONE_11_0)
 diff --git a/src/common/apple_platform_utils.mm b/src/common/apple_platform_utils.mm
-index 4795d8f7b1..23fb39721f 100644
+index 20af932d94..44b902b425 100644
 --- a/src/common/apple_platform_utils.mm
 +++ b/src/common/apple_platform_utils.mm
-@@ -18,9 +18,9 @@ bool IsMetalRendererAvailable()
+@@ -78,9 +78,9 @@ bool IsMetalRendererAvailable()
  
      // We only support macos 10.13+ and 11 for now. Since they are requirements for Metal 2.0.
  #if TARGET_OS_SIMULATOR
@@ -62,7 +62,7 @@ index 4795d8f7b1..23fb39721f 100644
  #endif
      {
          if (!queriedSystemDevice)
-@@ -38,7 +38,7 @@ bool IsMetalRendererAvailable()
+@@ -98,7 +98,7 @@ bool IsMetalRendererAvailable()
  #if defined(ANGLE_PLATFORM_MACOS) || defined(ANGLE_PLATFORM_MACCATALYST)
                  // Old Macs, such as MacBookPro11,4, cannot use ANGLE's Metal backend.
                  // This check can be removed once they are no longer supported.
@@ -84,8 +84,21 @@ index d7c9caf680..99c7f851de 100644
  #        endif
  #    endif
  #    // Identify Metal API >= what shipped on macOS Catalina.
+diff --git a/src/libANGLE/renderer/metal/ContextMtl.mm b/src/libANGLE/renderer/metal/ContextMtl.mm
+index 92f6dd0837..9235642878 100644
+--- a/src/libANGLE/renderer/metal/ContextMtl.mm
++++ b/src/libANGLE/renderer/metal/ContextMtl.mm
+@@ -219,7 +219,7 @@ ContextMtl::ContextMtl(const gl::State &state,
+       mProvokingVertexHelper(this),
+       mContextDevice(GetOwnershipIdentity(attribs))
+ {
+-    if (@available(iOS 12.0, macOS 10.14, *))
++    if (@available(iOS 12.0, macOS 10.14, visionOS 1.0, *))
+     {
+         mHasMetalSharedEvents = true;
+     }
 diff --git a/src/libANGLE/renderer/metal/DisplayMtl.mm b/src/libANGLE/renderer/metal/DisplayMtl.mm
-index b93adbbe07..445db45414 100644
+index d5d1e693c0..b015f88137 100644
 --- a/src/libANGLE/renderer/metal/DisplayMtl.mm
 +++ b/src/libANGLE/renderer/metal/DisplayMtl.mm
 @@ -769,7 +769,7 @@ void DisplayMtl::ensureCapsInitialized() const
@@ -106,7 +119,14 @@ index b93adbbe07..445db45414 100644
      {
          mNativeLimitations.noCompressedTexture3D = !supportsEitherGPUFamily(3, 1);
      }
-@@ -971,7 +971,7 @@ void DisplayMtl::initializeExtensions() const
+@@ -965,13 +965,13 @@ void DisplayMtl::initializeExtensions() const
+     mNativeExtensions.copyCompressedTextureCHROMIUM = false;
+ 
+ #if !ANGLE_PLATFORM_WATCHOS
+-    if (@available(iOS 14.0, macOS 10.11, macCatalyst 14.0, tvOS 16.0, *))
++    if (@available(iOS 14.0, macOS 10.11, macCatalyst 14.0, tvOS 16.0, visionOS 1.0, *))
+     {
+         mNativeExtensions.textureMirrorClampToEdgeEXT = true;
      }
  #endif
  
@@ -133,7 +153,7 @@ index b93adbbe07..445db45414 100644
      {
          mNativeExtensions.blendFuncExtendedEXT = true;
          mNativeCaps.maxDualSourceDrawBuffers   = 1;
-@@ -1409,7 +1409,7 @@ bool DisplayMtl::supportsEitherGPUFamily(uint8_t iOSFamily, uint8_t macFamily) c
+@@ -1420,7 +1420,7 @@ bool DisplayMtl::supportsEitherGPUFamily(uint8_t iOSFamily, uint8_t macFamily) c
  
  bool DisplayMtl::supportsMetal2_1() const
  {
@@ -142,7 +162,7 @@ index b93adbbe07..445db45414 100644
      {
          return true;
      }
-@@ -1420,7 +1420,7 @@ bool DisplayMtl::supportsMetal2_1() const
+@@ -1431,7 +1431,7 @@ bool DisplayMtl::supportsMetal2_1() const
  }
  bool DisplayMtl::supportsMetal2_2() const
  {
@@ -150,6 +170,15 @@ index b93adbbe07..445db45414 100644
 +    if (ANGLE_APPLE_AVAILABLE_XCI(10.15, 13.1, 13.0, 1.0))
      {
          return true;
+     }
+@@ -1446,7 +1446,7 @@ bool DisplayMtl::supports32BitFloatFiltering() const
+ #if (defined(__MAC_11_0) && __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_11_0) ||        \
+     (defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_14_0) || \
+     (defined(__TVOS_14_0) && __TV_OS_VERSION_MIN_REQUIRED >= __TVOS_14_0)
+-    if (@available(ios 14.0, macOS 11.0, *))
++    if (@available(iOS 14.0, macOS 11.0, visionOS 1.0, *))
+     {
+         return [mMetalDevice supports32BitFloatFiltering];
      }
 diff --git a/src/libANGLE/renderer/metal/FrameBufferMtl.mm b/src/libANGLE/renderer/metal/FrameBufferMtl.mm
 index 5f3f10a86f..573f1b4e20 100644
@@ -165,7 +194,7 @@ index 5f3f10a86f..573f1b4e20 100644
          // If depth/stencil attachment has depth & stencil bits, then depth & stencil must not have
          // separate attachment. i.e. They must be the same texture or one of them has no
 diff --git a/src/libANGLE/renderer/metal/mtl_command_buffer.mm b/src/libANGLE/renderer/metal/mtl_command_buffer.mm
-index c5b9b6a467..6867e45ebc 100644
+index 6207372fc3..bddee37599 100644
 --- a/src/libANGLE/renderer/metal/mtl_command_buffer.mm
 +++ b/src/libANGLE/renderer/metal/mtl_command_buffer.mm
 @@ -380,7 +380,7 @@ inline void UseResourceCmd(id<MTLRenderCommandEncoder> encoder, IntermediateComm
@@ -195,6 +224,19 @@ index c5b9b6a467..6867e45ebc 100644
      {
          [encoder memoryBarrierWithResources:&resource
                                        count:1
+diff --git a/src/libANGLE/renderer/metal/mtl_context_device.mm b/src/libANGLE/renderer/metal/mtl_context_device.mm
+index bd037e2c21..be11fffea6 100644
+--- a/src/libANGLE/renderer/metal/mtl_context_device.mm
++++ b/src/libANGLE/renderer/metal/mtl_context_device.mm
+@@ -145,7 +145,7 @@ void ContextDevice::setOwnerWithIdentity(id<MTLResource> resource) const
+ 
+ bool ContextDevice::hasUnifiedMemory() const
+ {
+-    if (@available(iOS 13.0, macOS 10.15, macCatalyst 13.1, tvOS 13.0, *))
++    if (@available(iOS 13.0, macOS 10.15, macCatalyst 13.1, tvOS 13.0, visionOS 1.0, *))
+     {
+         return [get() hasUnifiedMemory];
+     }
 diff --git a/src/libANGLE/renderer/metal/mtl_format_table_autogen.mm b/src/libANGLE/renderer/metal/mtl_format_table_autogen.mm
 index f11e0150a7..c586c799a3 100644
 --- a/src/libANGLE/renderer/metal/mtl_format_table_autogen.mm
@@ -249,7 +291,7 @@ index 225b52fe94..2a84c524b9 100644
          case MTLPixelFormatPVRTC_RGB_2BPP:
          case MTLPixelFormatPVRTC_RGB_2BPP_sRGB:
 diff --git a/src/libANGLE/renderer/metal/mtl_resources.mm b/src/libANGLE/renderer/metal/mtl_resources.mm
-index 829539a2e8..5052a13596 100644
+index 1a16ccf79c..0f51eb7e48 100644
 --- a/src/libANGLE/renderer/metal/mtl_resources.mm
 +++ b/src/libANGLE/renderer/metal/mtl_resources.mm
 @@ -401,7 +401,7 @@ Texture::Texture(ContextMtl *context,

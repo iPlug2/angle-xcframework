@@ -8,6 +8,7 @@ rsync -av --prune-empty-dirs --include='*/' --include='GLES2/*.h' --exclude='*' 
 rsync -av --prune-empty-dirs --include='*/' --include='GLES3/*.h' --exclude='*' $ANGLE_FOLDER/include/ $GLESV2_HEADERS_DIR
 rsync -av --prune-empty-dirs --include='*/' --include='KHR/*.h' --exclude='*' $ANGLE_FOLDER/include/ $GLESV2_HEADERS_DIR
 cp $ANGLE_FOLDER/include/angle_gl.h $GLESV2_HEADERS_DIR
+rm $GLESV2_HEADERS_DIR/GLES/egl.h
 
 for RELATIVE_PATH in `find $GLESV2_HEADERS_DIR -type f -name "*.h" | sed "s|^${GLESV2_HEADERS_DIR}/||"`; do
     FILE_NAME=`basename $RELATIVE_PATH`

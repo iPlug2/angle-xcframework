@@ -28,6 +28,11 @@ build_xcframwork()
   lipo -create VisionOSSimulator/arm64/$1.framework/$1 VisionOSSimulator/x64/$1.framework/$1 -o temp
   mv temp VisionOSSimulator/Universal/$1.framework/$1
 
+  if [ "$1" = "libEGL" ]; then
+    cp PrivacyInfo.xcprivacy iOS/arm64/$1.framework
+    cp PrivacyInfo.xcprivacy VisionOS/arm64/$1.framework
+  fi
+
   xcodebuild -create-xcframework -framework iOS/arm64/$1.framework -framework VisionOS/arm64/$1.framework -framework VisionOSSimulator/Universal/$1.framework -framework Catalyst/Universal/$1.framework -framework Simulator/Universal/$1.framework -framework Mac/Universal/$1.framework -output $1.xcframework
 }
 

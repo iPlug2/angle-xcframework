@@ -1,24 +1,19 @@
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index a91928eea..cb51b0955 100644
+index f991e525c..1f2dd22a3 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -494,9 +494,6 @@ config("compiler") {
-     # linker_driver.py script runs dsymutil itself, which is set to be the
-     # linker for Rust targets as well.
-     rustflags += [ "-Csplit-debuginfo=unpacked" ]
--
--    # TODO(crbug.com/1519899): Figure out how to remove this.
--    cflags += [ "-fno-define-target-os-macros" ]
-   }
- 
-   # Linux/Android/Fuchsia common flags setup.
-@@ -1877,17 +1874,7 @@ config("default_warnings") {
+@@ -1893,22 +1893,12 @@ config("default_warnings") {
  
          # TODO(crbug.com/1494809): Evaluate and possibly enable.
          "-Wno-vla-extension",
 -
 -        # TODO(https://crbug.com/1490607): Fix and re-enable.
 -        "-Wno-thread-safety-reference-return",
+       ]
+ 
+       cflags_cc += [
+         # TODO(crbug.com/328490295): Fix and re-enable for C flags.
+         "-Wenum-compare-conditional",
        ]
 -
 -      if (!is_nacl) {
@@ -31,10 +26,10 @@ index a91928eea..cb51b0955 100644
  
      # Some builders, such as Cronet, use a different version of Clang than
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index 4360f328c..888ba43bc 100644
+index 44992837c..cbc212683 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
-@@ -252,6 +252,14 @@ group("xctest") {
+@@ -256,6 +256,14 @@ group("xctest") {
  _xctrunner_path =
      "$ios_sdk_platform_path/Developer/Library/Xcode/Agents/XCTRunner.app"
  
@@ -49,7 +44,7 @@ index 4360f328c..888ba43bc 100644
  # When building with Goma RBE, $ios_sdk_platform_path corresponds to a symlink
  # below $root_build_dir that points to the real SDK to use. Because the files
  # are below $root_build_dir, it is not possible to list them as a target input
-@@ -265,15 +273,24 @@ _xctrunner_path =
+@@ -269,15 +277,24 @@ _xctrunner_path =
  # To workaround this, add a target that pretends to create those files
  # (but does nothing). See https://crbug.com/1061487 for why this is needed.
  if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
@@ -78,7 +73,7 @@ index 4360f328c..888ba43bc 100644
  }
  
  # When creating the test runner for an XCUITest, the arm64e slice of the binary
-@@ -282,7 +299,7 @@ if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
+@@ -286,7 +303,7 @@ if (use_system_xcode && (use_goma || use_remoteexec || use_siso)) {
  action("xctest_runner_without_arm64e") {
    testonly = true
    script = "//build/config/ios/strip_arm64e.py"
@@ -88,10 +83,10 @@ index 4360f328c..888ba43bc 100644
    args = [
      "--output",
 diff --git a/config/ios/rules.gni b/config/ios/rules.gni
-index be2737de0..d77f6be90 100644
+index 3f47b394e..83e0e346f 100644
 --- a/config/ios/rules.gni
 +++ b/config/ios/rules.gni
-@@ -1705,9 +1705,13 @@ template("ios_xcuitest_test_runner_bundle") {
+@@ -1805,9 +1805,13 @@ template("ios_xcuitest_test_runner_bundle") {
      testonly = true
      script = "//build/apple/plist_util.py"
  
@@ -107,7 +102,7 @@ index be2737de0..d77f6be90 100644
        # NOTE: The XCTRunnerAddition+Info.plist must come after the Info.plist
        # because it overrides the values under "CFBundleIdentifier" and
        # "CFBundleName".
-@@ -1752,7 +1756,11 @@ template("ios_xcuitest_test_runner_bundle") {
+@@ -1852,7 +1856,11 @@ template("ios_xcuitest_test_runner_bundle") {
      testonly = true
      visibility = [ ":$_target_name" ]
  

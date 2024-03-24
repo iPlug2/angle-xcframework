@@ -82,6 +82,7 @@ jobs:
       tar -xzvf Catalyst.arm64/angle.tar.gz
       tar -xzvf Catalyst.x64/angle.tar.gz
       chmod +x build_xcframework.sh
+      cp PrivacyInfo.xcprivacy out/
       cp build_xcframework.sh out/
       out/build_xcframework.sh
       mv out/libEGL.xcframework .

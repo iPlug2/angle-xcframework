@@ -12,7 +12,7 @@ index 81b06d438..94b260971 100755
    if args.developer_dir:
      os.environ['DEVELOPER_DIR'] = args.developer_dir
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 49180c874..e6191045f 100644
+index 6b1d9db1b..9a6701be6 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
 @@ -613,24 +613,6 @@ config("compiler") {
@@ -49,7 +49,7 @@ index 49180c874..e6191045f 100644
  
      if (!is_nacl || is_nacl_saigo) {
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index cbc212683..38d2bbd40 100644
+index c8e84ba69..f03d75a54 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
 @@ -41,7 +41,11 @@ config("compiler") {
@@ -79,13 +79,13 @@ index fd96f312d..b2f43cb9b 100644
        if extension == '.framework':
          return 'mac_framework'
 diff --git a/config/ios/config.gni b/config/ios/config.gni
-index f1c62fae3..f451ace4d 100644
+index c5c10c3f7..ccac50c08 100644
 --- a/config/ios/config.gni
 +++ b/config/ios/config.gni
-@@ -15,6 +15,7 @@ declare_args() {
-   # then writes out an orderfile to the documents directory. It should generally
-   # NOT be enabled.
-   ios_chrome_generate_order_file = false
+@@ -9,6 +9,7 @@ declare_args() {
+   # default is only there for compatibility reasons and will be removed (see
+   # crbug.com/1138425 for more details).
+   target_environment = ""
 +  target_os_variation = ""
  }
  
@@ -114,10 +114,10 @@ index f8bc90370..6f3a18959 100644
      ios_sdk_platform = "iPhoneSimulator"
    } else if (target_environment == "device") {
 diff --git a/toolchain/apple/toolchain.gni b/toolchain/apple/toolchain.gni
-index c22bc67af..903654714 100644
+index 8fd42934a..714413e3c 100644
 --- a/toolchain/apple/toolchain.gni
 +++ b/toolchain/apple/toolchain.gni
-@@ -466,7 +466,7 @@ template("single_apple_toolchain") {
+@@ -460,7 +460,7 @@ template("single_apple_toolchain") {
          command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} $python_path $script $libtool -static -D {{arflags}} -o {{output}} @$rspfile"
          description = "LIBTOOL-STATIC {{output}}"
        } else {

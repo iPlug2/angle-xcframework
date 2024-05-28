@@ -12,16 +12,16 @@ index 81b06d438..94b260971 100755
    if args.developer_dir:
      os.environ['DEVELOPER_DIR'] = args.developer_dir
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 6b1d9db1b..9a6701be6 100644
+index 58b23ceaf..35e3c5c50 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -613,24 +613,6 @@ config("compiler") {
+@@ -568,24 +568,6 @@ config("compiler") {
        }
      }
  
--    # TODO(crbug.com/1488374): This causes binary size growth and potentially
+-    # TODO(crbug.com/40283598): This causes binary size growth and potentially
 -    # other problems.
--    # TODO(crbug.com/1491036): This isn't supported by Cronet's mainline llvm version.
+-    # TODO(crbug.com/40284925): This isn't supported by Cronet's mainline llvm version.
 -    if (default_toolchain != "//build/toolchain/cros:target" &&
 -        !llvm_android_mainline) {
 -      cflags += [
@@ -37,10 +37,10 @@ index 6b1d9db1b..9a6701be6 100644
 -      }
 -    }
 -
-     # TODO(crbug.com/1235145): Investigate why/if this should be needed.
+     # TODO(crbug.com/40192287): Investigate why/if this should be needed.
      if (is_win) {
        cflags += [ "/clang:-ffp-contract=off" ]
-@@ -1832,6 +1814,7 @@ config("default_warnings") {
+@@ -1824,6 +1806,7 @@ config("default_warnings") {
        # Disables.
        "-Wno-missing-field-initializers",  # "struct foo f = {0};"
        "-Wno-unused-parameter",  # Unused function parameters.
@@ -49,10 +49,10 @@ index 6b1d9db1b..9a6701be6 100644
  
      if (!is_nacl || is_nacl_saigo) {
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index c8e84ba69..f03d75a54 100644
+index 36e1ecdb3..7468ab43b 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
-@@ -41,7 +41,11 @@ config("compiler") {
+@@ -40,7 +40,11 @@ config("compiler") {
    }
  
    # OS.
@@ -79,7 +79,7 @@ index fd96f312d..b2f43cb9b 100644
        if extension == '.framework':
          return 'mac_framework'
 diff --git a/config/ios/config.gni b/config/ios/config.gni
-index c5c10c3f7..ccac50c08 100644
+index 2b7a8f60c..480a87e88 100644
 --- a/config/ios/config.gni
 +++ b/config/ios/config.gni
 @@ -9,6 +9,7 @@ declare_args() {
@@ -87,14 +87,14 @@ index c5c10c3f7..ccac50c08 100644
    # crbug.com/1138425 for more details).
    target_environment = ""
 +  target_os_variation = ""
- }
  
- if (target_environment == "") {
+   # Generate orderfile at application startup and then exit.
+   # NOTE: This flag adds runtime tooling to capture function call details,
 diff --git a/config/ios/ios_sdk.gni b/config/ios/ios_sdk.gni
-index f8bc90370..6f3a18959 100644
+index fa14938fb..3ef96bac6 100644
 --- a/config/ios/ios_sdk.gni
 +++ b/config/ios/ios_sdk.gni
-@@ -71,7 +71,17 @@ if (target_environment == "device" && ios_enable_code_signing) {
+@@ -70,7 +70,17 @@ if (target_environment == "device" && ios_enable_code_signing) {
  
  if (ios_sdk_path == "") {
    # Compute default target.
@@ -114,10 +114,10 @@ index f8bc90370..6f3a18959 100644
      ios_sdk_platform = "iPhoneSimulator"
    } else if (target_environment == "device") {
 diff --git a/toolchain/apple/toolchain.gni b/toolchain/apple/toolchain.gni
-index 8fd42934a..714413e3c 100644
+index 9e138aacd..03481d4c8 100644
 --- a/toolchain/apple/toolchain.gni
 +++ b/toolchain/apple/toolchain.gni
-@@ -460,7 +460,7 @@ template("single_apple_toolchain") {
+@@ -449,7 +449,7 @@ template("single_apple_toolchain") {
          command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} $python_path $script $libtool -static -D {{arflags}} -o {{output}} @$rspfile"
          description = "LIBTOOL-STATIC {{output}}"
        } else {

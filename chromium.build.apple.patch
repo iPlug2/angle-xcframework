@@ -1,8 +1,8 @@
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 1a2922ce8..58b23ceaf 100644
+index 41c96adc7..0a03e5508 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -1885,22 +1885,12 @@ config("default_warnings") {
+@@ -1907,25 +1907,12 @@ config("default_warnings") {
  
          # TODO(crbug.com/40286317): Evaluate and possibly enable.
          "-Wno-vla-extension",
@@ -21,6 +21,9 @@ index 1a2922ce8..58b23ceaf 100644
 -          # TODO(crbug.com/41486292): Fix and re-enable.
 -          "-Wno-c++11-narrowing-const-reference",
 -        ]
+-
+-        # TODO(crbug.com/344680447): Fix and re-enable.
+-        cflags_cc += [ "-Wno-missing-template-arg-list-after-template-kw" ]
 -      }
      }
  
@@ -83,7 +86,7 @@ index e6ae0cc95..36e1ecdb3 100644
    args = [
      "--output",
 diff --git a/config/ios/rules.gni b/config/ios/rules.gni
-index a2cfa7679..2d07e6fd6 100644
+index f957d7d5f..83dbdb7af 100644
 --- a/config/ios/rules.gni
 +++ b/config/ios/rules.gni
 @@ -1904,9 +1904,13 @@ template("ios_xcuitest_test_runner_bundle") {

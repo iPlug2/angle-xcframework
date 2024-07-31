@@ -2,6 +2,7 @@ target_os = "mac"
 is_component_build = false
 target_cpu = "arm64"
 is_debug = false
+dcheck_always_on = false
 is_official_build = true
 angle_assert_always_on = false
 mac_deployment_target = "11.0"

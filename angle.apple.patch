@@ -1,8 +1,8 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 1dc20fa1b4..a07011fcf5 100644
+index 61f96e692..0fb4f7858 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -668,6 +668,7 @@ angle_static_library("angle_gpu_info_util") {
+@@ -694,6 +694,7 @@ angle_static_library("angle_gpu_info_util") {
  
    if (is_apple) {
      frameworks = [
@@ -10,7 +10,7 @@ index 1dc20fa1b4..a07011fcf5 100644
        "IOKit.framework",
        "CoreFoundation.framework",
        "CoreGraphics.framework",
-@@ -677,12 +678,12 @@ angle_static_library("angle_gpu_info_util") {
+@@ -703,12 +704,12 @@ angle_static_library("angle_gpu_info_util") {
      } else if (angle_enable_cgl) {
        frameworks += [ "OpenGL.framework" ]
      }
@@ -27,7 +27,7 @@ index 1dc20fa1b4..a07011fcf5 100644
  }
  
 diff --git a/src/common/system_utils.cpp b/src/common/system_utils.cpp
-index 44921be4ed..be73ef8e5c 100644
+index 740384eaf..18de3eeec 100644
 --- a/src/common/system_utils.cpp
 +++ b/src/common/system_utils.cpp
 @@ -226,7 +226,7 @@ void *OpenSystemLibraryAndGetError(const char *libraryName,
@@ -40,7 +40,7 @@ index 44921be4ed..be73ef8e5c 100644
      // The actual library name doesn't have an extension at all.
      // E.g. "libEGL.framework/libEGL"
 diff --git a/src/common/system_utils_mac.cpp b/src/common/system_utils_mac.cpp
-index 2c48a7eb04..18d0b32313 100644
+index 2c48a7eb0..18d0b3231 100644
 --- a/src/common/system_utils_mac.cpp
 +++ b/src/common/system_utils_mac.cpp
 @@ -23,6 +23,6 @@ namespace angle
@@ -52,7 +52,7 @@ index 2c48a7eb04..18d0b32313 100644
  }
  }  // namespace angle
 diff --git a/src/common/system_utils_posix.cpp b/src/common/system_utils_posix.cpp
-index 17cfc912a1..f333c0ee2a 100644
+index 76c5c99f0..a99eff17f 100644
 --- a/src/common/system_utils_posix.cpp
 +++ b/src/common/system_utils_posix.cpp
 @@ -197,7 +197,12 @@ void *OpenSystemLibraryWithExtensionAndGetError(const char *libraryName,
@@ -70,7 +70,7 @@ index 17cfc912a1..f333c0ee2a 100644
          directory = GetExecutableDirectory() + "/Frameworks/";
  #elif ANGLE_PLATFORM_FUCHSIA
 diff --git a/src/gpu_info_util/SystemInfo_macos.mm b/src/gpu_info_util/SystemInfo_macos.mm
-index 553c675683..dfbfcc1e6a 100644
+index 553c67568..dea55d289 100644
 --- a/src/gpu_info_util/SystemInfo_macos.mm
 +++ b/src/gpu_info_util/SystemInfo_macos.mm
 @@ -15,10 +15,22 @@
@@ -99,6 +99,15 @@ index 553c675683..dfbfcc1e6a 100644
  #endif
  
  namespace angle
+@@ -216,7 +228,7 @@ uint64_t GetGpuIDFromDisplayID(uint32_t displayID)
+ {
+     // First attempt to use query the registryID from a Metal device before falling back to CGL.
+     // This avoids loading the OpenGL framework when possible.
+-    if (@available(macOS 10.13, *))
++    if (@available(macOS 10.13, macCatalyst 13.0, *))
+     {
+         id<MTLDevice> device = CGDirectDisplayCopyCurrentMetalDevice(displayID);
+         if (device)
 @@ -235,7 +247,7 @@ uint64_t GetGpuIDFromDisplayID(uint32_t displayID)
  // Used with permission.
  uint64_t GetGpuIDFromOpenGLDisplayMask(uint32_t displayMask)
@@ -137,10 +146,10 @@ index 553c675683..dfbfcc1e6a 100644
          ForceGPUSwitchIndex(info);
      }
 diff --git a/src/libGLESv2.gni b/src/libGLESv2.gni
-index 10565a1821..e131b21bb1 100644
+index 41bd81aa1..b6b36ccb4 100644
 --- a/src/libGLESv2.gni
 +++ b/src/libGLESv2.gni
-@@ -123,7 +123,7 @@ if (is_apple) {
+@@ -127,7 +127,7 @@ if (is_apple) {
      "src/common/system_utils_apple.cpp",
      "src/common/system_utils_posix.cpp",
    ]

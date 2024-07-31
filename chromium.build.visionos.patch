@@ -11,11 +11,30 @@ index 81b06d438..94b260971 100755
    args = parser.parse_args()
    if args.developer_dir:
      os.environ['DEVELOPER_DIR'] = args.developer_dir
+diff --git a/config/clang/BUILD.gn b/config/clang/BUILD.gn
+index fcca59b0f..1abb3431f 100644
+--- a/config/clang/BUILD.gn
++++ b/config/clang/BUILD.gn
+@@ -240,7 +240,13 @@ clang_lib("compiler_builtins") {
+   if (is_mac) {
+     libname = "osx"
+   } else if (is_ios) {
+-    if (target_environment == "simulator") {
++    if (target_os_variation == "visionos") {
++      if (target_environment == "simulator") {
++        libname = "xrossim"
++      } else {
++        libname = "xros"
++      }
++    } else if (target_environment == "simulator") {
+       libname = "iossim"
+     } else if (target_environment == "catalyst") {
+       libname = "osx"
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 58b23ceaf..35e3c5c50 100644
+index 750d292a0..486c25e2c 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -568,24 +568,6 @@ config("compiler") {
+@@ -586,24 +586,6 @@ config("compiler") {
        }
      }
  
@@ -40,7 +59,7 @@ index 58b23ceaf..35e3c5c50 100644
      # TODO(crbug.com/40192287): Investigate why/if this should be needed.
      if (is_win) {
        cflags += [ "/clang:-ffp-contract=off" ]
-@@ -1824,6 +1806,7 @@ config("default_warnings") {
+@@ -1891,6 +1873,7 @@ config("default_warnings") {
        # Disables.
        "-Wno-missing-field-initializers",  # "struct foo f = {0};"
        "-Wno-unused-parameter",  # Unused function parameters.
@@ -49,7 +68,7 @@ index 58b23ceaf..35e3c5c50 100644
  
      if (!is_nacl || is_nacl_saigo) {
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index 36e1ecdb3..7468ab43b 100644
+index 42c8ed6ad..b8bc61343 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
 @@ -40,7 +40,11 @@ config("compiler") {
@@ -91,10 +110,10 @@ index 2b7a8f60c..480a87e88 100644
    # Generate orderfile at application startup and then exit.
    # NOTE: This flag adds runtime tooling to capture function call details,
 diff --git a/config/ios/ios_sdk.gni b/config/ios/ios_sdk.gni
-index fa14938fb..3ef96bac6 100644
+index fd9f6d175..f8555072d 100644
 --- a/config/ios/ios_sdk.gni
 +++ b/config/ios/ios_sdk.gni
-@@ -70,7 +70,17 @@ if (target_environment == "device" && ios_enable_code_signing) {
+@@ -97,7 +97,17 @@ ios_use_xcode_symlinks =
  
  if (ios_sdk_path == "") {
    # Compute default target.
@@ -114,7 +133,7 @@ index fa14938fb..3ef96bac6 100644
      ios_sdk_platform = "iPhoneSimulator"
    } else if (target_environment == "device") {
 diff --git a/toolchain/apple/toolchain.gni b/toolchain/apple/toolchain.gni
-index 9e138aacd..03481d4c8 100644
+index acd5a59f5..5870c5368 100644
 --- a/toolchain/apple/toolchain.gni
 +++ b/toolchain/apple/toolchain.gni
 @@ -449,7 +449,7 @@ template("single_apple_toolchain") {

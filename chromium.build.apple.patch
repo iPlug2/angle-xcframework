@@ -1,8 +1,8 @@
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 41c96adc7..0a03e5508 100644
+index 4eeb07771..750d292a0 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -1907,25 +1907,12 @@ config("default_warnings") {
+@@ -1942,30 +1942,12 @@ config("default_warnings") {
  
          # TODO(crbug.com/40286317): Evaluate and possibly enable.
          "-Wno-vla-extension",
@@ -24,12 +24,17 @@ index 41c96adc7..0a03e5508 100644
 -
 -        # TODO(crbug.com/344680447): Fix and re-enable.
 -        cflags_cc += [ "-Wno-missing-template-arg-list-after-template-kw" ]
+-
+-        if (llvm_force_head_revision) {
+-          # TODO(crbug.com/356172342): Fix and re-enable.
+-          cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
+-        }
 -      }
      }
  
      # Some builders, such as Cronet, use a different version of Clang than
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index e6ae0cc95..36e1ecdb3 100644
+index 30bc060e6..42c8ed6ad 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
 @@ -255,6 +255,14 @@ group("xctest") {
@@ -50,7 +55,7 @@ index e6ae0cc95..36e1ecdb3 100644
 @@ -268,15 +276,24 @@ _xctrunner_path =
  # To workaround this, add a target that pretends to create those files
  # (but does nothing). See https://crbug.com/1061487 for why this is needed.
- if (use_system_xcode && (use_remoteexec || use_siso)) {
+ if (ios_use_xcode_symlinks) {
 -  action("copy_xctrunner_app") {
 -    testonly = true
 -    script = "//build/noop.py"
@@ -76,7 +81,7 @@ index e6ae0cc95..36e1ecdb3 100644
  }
  
  # When creating the test runner for an XCUITest, the arm64e slice of the binary
-@@ -285,7 +302,7 @@ if (use_system_xcode && (use_remoteexec || use_siso)) {
+@@ -285,7 +302,7 @@ if (ios_use_xcode_symlinks) {
  action("xctest_runner_without_arm64e") {
    testonly = true
    script = "//build/config/ios/strip_arm64e.py"
@@ -86,7 +91,7 @@ index e6ae0cc95..36e1ecdb3 100644
    args = [
      "--output",
 diff --git a/config/ios/rules.gni b/config/ios/rules.gni
-index f957d7d5f..83dbdb7af 100644
+index 046fc2553..4b0a6d7f8 100644
 --- a/config/ios/rules.gni
 +++ b/config/ios/rules.gni
 @@ -1904,9 +1904,13 @@ template("ios_xcuitest_test_runner_bundle") {

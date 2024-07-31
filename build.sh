@@ -29,9 +29,9 @@ echo "Apply Apple ANGLE patch"
 git apply ../angle.apple.patch --ignore-whitespace --whitespace=nowarn
 check_success
 
-echo "Apply Flip-y ANGLE patch"
-git apply ../flip_y.patch --ignore-whitespace --whitespace=nowarn
-check_success
+# echo "Apply Flip-y ANGLE patch"
+# git apply ../flip_y.patch --ignore-whitespace --whitespace=nowarn
+# check_success
 
 echo "Apply Variable Rasterization Rate Map ANGLE patch"
 git apply ../variable_rasterization_rate_map.patch --ignore-whitespace --whitespace=nowarn

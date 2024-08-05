@@ -1,8 +1,8 @@
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 4eeb07771..750d292a0 100644
+index 835e4dc0f..a8209bef5 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -1942,30 +1942,12 @@ config("default_warnings") {
+@@ -1942,28 +1942,12 @@ config("default_warnings") {
  
          # TODO(crbug.com/40286317): Evaluate and possibly enable.
          "-Wno-vla-extension",
@@ -25,16 +25,14 @@ index 4eeb07771..750d292a0 100644
 -        # TODO(crbug.com/344680447): Fix and re-enable.
 -        cflags_cc += [ "-Wno-missing-template-arg-list-after-template-kw" ]
 -
--        if (llvm_force_head_revision) {
--          # TODO(crbug.com/356172342): Fix and re-enable.
--          cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
--        }
+-        # TODO(crbug.com/356172342): Fix and re-enable.
+-        cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
 -      }
      }
  
      # Some builders, such as Cronet, use a different version of Clang than
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index 30bc060e6..42c8ed6ad 100644
+index 295f36de0..9dfb220d1 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
 @@ -255,6 +255,14 @@ group("xctest") {

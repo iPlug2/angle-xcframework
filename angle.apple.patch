@@ -145,6 +145,23 @@ index 553c67568..dea55d289 100644
      {
          ForceGPUSwitchIndex(info);
      }
+diff --git a/src/libANGLE/renderer/metal/mtl_resources.mm b/src/libANGLE/renderer/metal/mtl_resources.mm
+index dff8c6c9e..3e54bef8e 100644
+--- a/src/libANGLE/renderer/metal/mtl_resources.mm
++++ b/src/libANGLE/renderer/metal/mtl_resources.mm
+@@ -432,10 +432,10 @@ Texture::Texture(ContextMtl *context,
+ 
+         if (memoryLess)
+         {
+-            bool supportsMemoryless = false;
+ #if (TARGET_OS_IOS || TARGET_OS_TV) && !TARGET_OS_MACCATALYST
+-            supportsMemoryless = true;
++            desc.resourceOptions = MTLResourceStorageModeMemoryless;
+ #else
++            bool supportsMemoryless = false;
+             if (ANGLE_APPLE_AVAILABLE_XC(11.0, 14.1))
+             {
+                 supportsMemoryless = context->getDisplay()->supportsAppleGPUFamily(1);
 diff --git a/src/libGLESv2.gni b/src/libGLESv2.gni
 index 41bd81aa1..b6b36ccb4 100644
 --- a/src/libGLESv2.gni

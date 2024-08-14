@@ -109,7 +109,7 @@ index 2575266dc..cc7860f95 100644
          mHasMetalSharedEvents = true;
      }
 diff --git a/src/libANGLE/renderer/metal/DisplayMtl.mm b/src/libANGLE/renderer/metal/DisplayMtl.mm
-index 0d5a5e8b9..520fd803f 100644
+index 39457084d..3388753f6 100644
 --- a/src/libANGLE/renderer/metal/DisplayMtl.mm
 +++ b/src/libANGLE/renderer/metal/DisplayMtl.mm
 @@ -759,7 +759,7 @@ void DisplayMtl::ensureCapsInitialized() const
@@ -146,7 +146,7 @@ index 0d5a5e8b9..520fd803f 100644
      {
          mNativeExtensions.depthClampEXT = true;
      }
-@@ -1025,7 +1025,7 @@ void DisplayMtl::initializeExtensions() const
+@@ -1022,7 +1022,7 @@ void DisplayMtl::initializeExtensions() const
  
      mNativeExtensions.sampleVariablesOES = true;
  
@@ -155,7 +155,7 @@ index 0d5a5e8b9..520fd803f 100644
      {
          mNativeExtensions.shaderMultisampleInterpolationOES =
              [mMetalDevice supportsPullModelInterpolation];
-@@ -1098,7 +1098,7 @@ void DisplayMtl::initializeExtensions() const
+@@ -1095,7 +1095,7 @@ void DisplayMtl::initializeExtensions() const
      mNativeExtensions.provokingVertexANGLE = true;
  
      // GL_EXT_blend_func_extended
@@ -164,7 +164,7 @@ index 0d5a5e8b9..520fd803f 100644
      {
          mNativeExtensions.blendFuncExtendedEXT = true;
          mNativeCaps.maxDualSourceDrawBuffers   = 1;
-@@ -1399,7 +1399,7 @@ bool DisplayMtl::supportsEitherGPUFamily(uint8_t iOSFamily, uint8_t macFamily) c
+@@ -1396,7 +1396,7 @@ bool DisplayMtl::supportsEitherGPUFamily(uint8_t iOSFamily, uint8_t macFamily) c
  
  bool DisplayMtl::supportsMetal2_1() const
  {
@@ -173,7 +173,7 @@ index 0d5a5e8b9..520fd803f 100644
      {
          return true;
      }
-@@ -1410,7 +1410,7 @@ bool DisplayMtl::supportsMetal2_1() const
+@@ -1407,7 +1407,7 @@ bool DisplayMtl::supportsMetal2_1() const
  }
  bool DisplayMtl::supportsMetal2_2() const
  {
@@ -182,12 +182,12 @@ index 0d5a5e8b9..520fd803f 100644
      {
          return true;
      }
-@@ -1425,7 +1425,7 @@ bool DisplayMtl::supports32BitFloatFiltering() const
- #if (defined(__MAC_11_0) && __MAC_OS_X_VERSION_MIN_REQUIRED >= __MAC_11_0) ||        \
-     (defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_14_0) || \
-     (defined(__TVOS_14_0) && __TV_OS_VERSION_MIN_REQUIRED >= __TVOS_14_0)
--    if (@available(ios 14.0, macOS 11.0, *))
-+    if (@available(iOS 14.0, macOS 11.0, visionOS 1.0, *))
+@@ -1422,7 +1422,7 @@ bool DisplayMtl::supports32BitFloatFiltering() const
+ #if ((TARGET_OS_OSX && __MAC_OS_X_VERSION_MAX_ALLOWED >= 110000) ||  \
+      (TARGET_OS_IOS && __IPHONE_OS_VERSION_MAX_ALLOWED >= 140000) || \
+      (TARGET_OS_TV && __TV_OS_VERSION_MAX_ALLOWED >= 160000) || TARGET_OS_VISION)
+-    if (@available(macOS 11.0, macCatalyst 14.0, iOS 14.0, tvOS 16.0, *))
++    if (@available(macOS 11.0, macCatalyst 14.0, iOS 14.0, tvOS 16.0, visionOS 1.0, *))
      {
          return [mMetalDevice supports32BitFloatFiltering];
      }
@@ -204,60 +204,11 @@ index 8cab198f0..b0463b3a0 100644
      {
          // If depth/stencil attachment has depth & stencil bits, then depth & stencil must not have
          // separate attachment. i.e. They must be the same texture or one of them has no
-diff --git a/src/libANGLE/renderer/metal/gen_mtl_format_table.py b/src/libANGLE/renderer/metal/gen_mtl_format_table.py
-index 07eb14aef..1d12b5b8d 100644
---- a/src/libANGLE/renderer/metal/gen_mtl_format_table.py
-+++ b/src/libANGLE/renderer/metal/gen_mtl_format_table.py
-@@ -473,7 +473,7 @@ def gen_image_map_switch_string(image_table, angle_to_gl):
-     for angle_format in sorted(sim_override.keys()):
-         switch_data += gen_image_map_switch_simple_case(angle_format, sim_override[angle_format],
-                                                         angle_to_gl, sim_angle_to_mtl)
--    switch_data += "#if TARGET_OS_IOS\n"
-+    switch_data += "#if TARGET_OS_IOS || TARGET_OS_VISION\n"
-     for angle_format in sorted(astc_tpl_map.keys()):
-         switch_data += gen_image_map_switch_astc_case_iosmac(angle_format, angle_to_gl,
-                                                              astc_tpl_map)
-@@ -491,7 +491,7 @@ def gen_image_map_switch_string(image_table, angle_to_gl):
-     for angle_format in sorted(ios_override.keys()):
-         switch_data += gen_image_map_switch_simple_case(angle_format, ios_override[angle_format],
-                                                         angle_to_gl, ios_angle_to_mtl)
--    switch_data += "#if TARGET_OS_IOS\n"
-+    switch_data += "#if TARGET_OS_IOS || TARGET_OS_VISION\n"
-     for angle_format in sorted(astc_tpl_map.keys()):
-         switch_data += gen_image_map_switch_astc_case_iosmac(angle_format, angle_to_gl,
-                                                              astc_tpl_map)
-@@ -501,7 +501,7 @@ def gen_image_map_switch_string(image_table, angle_to_gl):
-     for angle_format in sorted(astc_tpl_map.keys()):
-         switch_data += gen_image_map_switch_astc_case_tv_watchos(angle_format, angle_to_gl,
-                                                                  astc_tpl_map)
--    switch_data += "#endif // TARGET_OS_IOS || TARGET_OS_TV\n"
-+    switch_data += "#endif // TARGET_OS_IOS || TARGET_OS_VISION || TARGET_OS_TV\n"
-     switch_data += "#endif // TARGET_OS_IPHONE\n"
- 
-     # Try to support all iOS formats on newer macOS with Apple GPU.
-@@ -564,7 +564,7 @@ def gen_image_mtl_to_angle_switch_string(image_table):
-     for angle_format in sorted(astc_tpl_map.keys()):
-         switch_data += case_image_mtl_to_angle_template.format(
-             mtl_format=astc_tpl_map[angle_format] + "LDR", angle_format=angle_format)
--    switch_data += "#if TARGET_OS_IOS || TARGET_OS_OSX \n"
-+    switch_data += "#if TARGET_OS_IOS || TARGET_OS_VISION || TARGET_OS_OSX \n"
-     for angle_format in sorted(astc_tpl_map.keys()):
-         switch_data += case_image_mtl_to_angle_template.format(
-             mtl_format=astc_tpl_map[angle_format] + "HDR", angle_format=angle_format)
-@@ -674,7 +674,7 @@ def gen_mtl_format_caps_init_string(map_image):
- 
-     caps_init_str += caps_to_cpp(ios_platform_caps)
- 
--    caps_init_str += "#if TARGET_OS_IOS || TARGET_OS_OSX\n"
-+    caps_init_str += "#if TARGET_OS_IOS || TARGET_OS_VISION || TARGET_OS_OSX\n"
-     caps_init_str += caps_to_cpp(ios_specific_caps)
-     caps_init_str += "#endif // TARGET_OS_IOS || mac 11.0+ \n"
-     caps_init_str += "#endif // TARGET_OS_IPHONE && !TARGET_OS_MACCATALYST || mac 11.0+ \n"
 diff --git a/src/libANGLE/renderer/metal/mtl_command_buffer.mm b/src/libANGLE/renderer/metal/mtl_command_buffer.mm
-index 8060b9699..2400e430c 100644
+index f1633a6d3..d71a992e3 100644
 --- a/src/libANGLE/renderer/metal/mtl_command_buffer.mm
 +++ b/src/libANGLE/renderer/metal/mtl_command_buffer.mm
-@@ -380,7 +380,7 @@ inline void UseResourceCmd(id<MTLRenderCommandEncoder> encoder, IntermediateComm
+@@ -381,7 +381,7 @@ inline void UseResourceCmd(id<MTLRenderCommandEncoder> encoder, IntermediateComm
      mtl::RenderStages stages = stream->fetch<mtl::RenderStages>();
      ANGLE_UNUSED_VARIABLE(stages);
  #if defined(__IPHONE_13_0) || defined(__MAC_10_15)
@@ -279,46 +230,6 @@ index 9916d17fd..557d9d31c 100644
      {
          return [get() hasUnifiedMemory];
      }
-diff --git a/src/libANGLE/renderer/metal/mtl_format_table_autogen.mm b/src/libANGLE/renderer/metal/mtl_format_table_autogen.mm
-index 8f4a68058..1425b2276 100644
---- a/src/libANGLE/renderer/metal/mtl_format_table_autogen.mm
-+++ b/src/libANGLE/renderer/metal/mtl_format_table_autogen.mm
-@@ -266,7 +266,7 @@ angle::FormatID Format::MetalToAngleFormatID(MTLPixelFormat formatMtl)
-             return angle::FormatID::ASTC_8x6_UNORM_BLOCK;
-         case MTLPixelFormatASTC_8x8_LDR:
-             return angle::FormatID::ASTC_8x8_UNORM_BLOCK;
--#    if TARGET_OS_IOS || TARGET_OS_OSX
-+#    if TARGET_OS_IOS || TARGET_OS_VISION || TARGET_OS_OSX
-         case MTLPixelFormatASTC_10x10_HDR:
-             return angle::FormatID::ASTC_10x10_UNORM_BLOCK;
-         case MTLPixelFormatASTC_10x5_HDR:
-@@ -1199,7 +1199,7 @@ void Format::init(const DisplayMtl *display, angle::FormatID intendedFormatId_)
-             this->initFunction   = Initialize4ComponentData<GLubyte, 0x00, 0x00, 0x00, 0xFF>;
-             break;
- 
--#    if TARGET_OS_IOS
-+#    if TARGET_OS_IOS || TARGET_OS_VISION
-         case angle::FormatID::ASTC_10x10_UNORM_BLOCK:
- 
-             if (display->supportsAppleGPUFamily(6))
-@@ -1723,7 +1723,7 @@ void Format::init(const DisplayMtl *display, angle::FormatID intendedFormatId_)
-             this->actualFormatId = angle::FormatID::D32_FLOAT_S8X24_UINT;
-             break;
- 
--#    if TARGET_OS_IOS
-+#    if TARGET_OS_IOS || TARGET_OS_VISION
-         case angle::FormatID::ASTC_10x10_UNORM_BLOCK:
- 
-             if (display->supportsAppleGPUFamily(6))
-@@ -4127,7 +4127,7 @@ void FormatTable::initNativeFormatCapsAutogen(const DisplayMtl *display)
-                   /** colorRenderable*/ display->supportsAppleGPUFamily(1),
-                   /** depthRenderable*/ false);
- 
--#    if TARGET_OS_IOS || TARGET_OS_OSX
-+#    if TARGET_OS_IOS || TARGET_OS_VISION || TARGET_OS_OSX
-     setFormatCaps(MTLPixelFormatASTC_10x10_HDR, /** filterable*/ display->supportsAppleGPUFamily(6),
-                   /** writable*/ false, /** blendable*/ false, /** multisample*/ false,
-                   /** resolve*/ false, /** colorRenderable*/ false, /** depthRenderable*/ false);
 diff --git a/src/libANGLE/renderer/metal/mtl_format_utils.mm b/src/libANGLE/renderer/metal/mtl_format_utils.mm
 index 42ea015fd..f04c6f0b5 100644
 --- a/src/libANGLE/renderer/metal/mtl_format_utils.mm
@@ -333,18 +244,18 @@ index 42ea015fd..f04c6f0b5 100644
          case MTLPixelFormatPVRTC_RGB_2BPP:
          case MTLPixelFormatPVRTC_RGB_2BPP_sRGB:
 diff --git a/src/libANGLE/renderer/metal/mtl_resources.mm b/src/libANGLE/renderer/metal/mtl_resources.mm
-index 3e54bef8e..42a431239 100644
+index 1b20954c4..0fc9bfe25 100644
 --- a/src/libANGLE/renderer/metal/mtl_resources.mm
 +++ b/src/libANGLE/renderer/metal/mtl_resources.mm
-@@ -432,7 +432,7 @@ Texture::Texture(ContextMtl *context,
- 
+@@ -433,7 +433,7 @@ Texture::Texture(ContextMtl *context,
          if (memoryLess)
          {
+             bool supportsMemoryless = false;
 -#if (TARGET_OS_IOS || TARGET_OS_TV) && !TARGET_OS_MACCATALYST
 +#if (TARGET_OS_IOS || TARGET_OS_TV || TARGET_OS_VISION) && !TARGET_OS_MACCATALYST
-             desc.resourceOptions = MTLResourceStorageModeMemoryless;
+             supportsMemoryless = true;
  #else
-             bool supportsMemoryless = false;
+             if (ANGLE_APPLE_AVAILABLE_XC(11.0, 14.1))
 @@ -510,7 +510,7 @@ Texture::Texture(ContextMtl *context,
              desc.usage |= MTLTextureUsageRenderTarget;
          }
@@ -355,10 +266,10 @@ index 3e54bef8e..42a431239 100644
  #else
          desc.resourceOptions = MTLResourceStorageModeManaged;
 diff --git a/src/libANGLE/renderer/metal/mtl_utils.mm b/src/libANGLE/renderer/metal/mtl_utils.mm
-index b16fdeab5..d1a5a6b64 100644
+index 81197f9d1..907079df8 100644
 --- a/src/libANGLE/renderer/metal/mtl_utils.mm
 +++ b/src/libANGLE/renderer/metal/mtl_utils.mm
-@@ -136,7 +136,7 @@ void StartFrameCapture(id<MTLDevice> metalDevice, id<MTLCommandQueue> metalCmdQu
+@@ -189,7 +189,7 @@ void StartFrameCapture(id<MTLDevice> metalDevice, id<MTLCommandQueue> metalCmdQu
      }
  
  #    ifdef __MAC_10_15
@@ -367,7 +278,7 @@ index b16fdeab5..d1a5a6b64 100644
      {
          auto captureDescriptor = mtl::adoptObjCObj([[MTLCaptureDescriptor alloc] init]);
          captureDescriptor.get().captureObject = metalDevice;
-@@ -164,7 +164,7 @@ void StartFrameCapture(id<MTLDevice> metalDevice, id<MTLCommandQueue> metalCmdQu
+@@ -222,7 +222,7 @@ void StartFrameCapture(id<MTLDevice> metalDevice, id<MTLCommandQueue> metalCmdQu
      }
      else
  #    endif  // __MAC_10_15
@@ -376,7 +287,7 @@ index b16fdeab5..d1a5a6b64 100644
          {
              auto captureDescriptor = mtl::adoptObjCObj([[MTLCaptureDescriptor alloc] init]);
              captureDescriptor.get().captureObject = metalDevice;
-@@ -791,7 +791,7 @@ static MTLLanguageVersion GetUserSetOrHighestMSLVersion(const MTLLanguageVersion
+@@ -855,7 +855,7 @@ static MTLLanguageVersion GetUserSetOrHighestMSLVersion(const MTLLanguageVersion
                  {
  #if (defined(__IPHONE_9_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_9_0) &&   \
      (!defined(__IPHONE_16_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_16_0) && \
@@ -385,7 +296,7 @@ index b16fdeab5..d1a5a6b64 100644
                      case 0:
                          return MTLLanguageVersion1_0;
  #endif
-@@ -890,7 +890,7 @@ AutoObjCPtr<id<MTLLibrary>> CreateShaderLibrary(
+@@ -954,7 +954,7 @@ AutoObjCPtr<id<MTLLibrary>> CreateShaderLibrary(
          // Mark all positions in VS with attribute invariant as non-optimizable
          bool canPerserveInvariance = false;
  #if defined(__MAC_11_0) || defined(__IPHONE_14_0) || defined(__TVOS_14_0)
@@ -394,57 +305,16 @@ index b16fdeab5..d1a5a6b64 100644
          {
              canPerserveInvariance      = true;
              options.preserveInvariance = usesInvariance;
-@@ -1487,7 +1487,7 @@ bool SupportsAppleGPUFamily(id<MTLDevice> device, uint8_t appleFamily)
- #if (__MAC_OS_X_VERSION_MAX_ALLOWED >= 101500 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000) || \
-     (__TV_OS_VERSION_MAX_ALLOWED >= 130000)
-     // If device supports [MTLDevice supportsFamily:], then use it.
+@@ -1552,7 +1552,7 @@ bool SupportsAppleGPUFamily(id<MTLDevice> device, uint8_t appleFamily)
+ #if (TARGET_OS_OSX && __MAC_OS_X_VERSION_MAX_ALLOWED >= 101500) ||  \
+     (TARGET_OS_IOS && __IPHONE_OS_VERSION_MAX_ALLOWED >= 130000) || \
+     (TARGET_OS_TV && __TV_OS_VERSION_MAX_ALLOWED >= 130000) || TARGET_OS_WATCH || TARGET_OS_VISION
 -    if (ANGLE_APPLE_AVAILABLE_XCI(10.15, 13.1, 13))
 +    if (ANGLE_APPLE_AVAILABLE_XCI(10.15, 13.1, 13, 1.0))
      {
          MTLGPUFamily family;
          switch (appleFamily)
-@@ -1507,7 +1507,7 @@ bool SupportsAppleGPUFamily(id<MTLDevice> device, uint8_t appleFamily)
-             case 5:
-                 family = MTLGPUFamilyApple5;
-                 break;
--#    if TARGET_OS_IOS || (TARGET_OS_OSX && __MAC_OS_X_VERSION_MAX_ALLOWED >= 110000)
-+#    if TARGET_OS_IOS || TARGET_OS_VISION || (TARGET_OS_OSX && __MAC_OS_X_VERSION_MAX_ALLOWED >= 110000)
-             case 6:
-                 family = MTLGPUFamilyApple6;
-                 break;
-@@ -1519,11 +1519,13 @@ bool SupportsAppleGPUFamily(id<MTLDevice> device, uint8_t appleFamily)
-                 family = MTLGPUFamilyApple8;
-                 break;
- #        endif
-+#if      !TARGET_OS_VISION
- #        if __MAC_OS_X_VERSION_MAX_ALLOWED >= 140000 || __IPHONE_OS_VERSION_MAX_ALLOWED >= 170000
-             case 9:
-                 family = MTLGPUFamilyApple9;
-                 break;
- #        endif
-+#        endif
- #    endif
-             default:
-                 return false;
-@@ -1532,7 +1534,7 @@ bool SupportsAppleGPUFamily(id<MTLDevice> device, uint8_t appleFamily)
-     }   // Metal 2.2
- #endif  // __IPHONE_OS_VERSION_MAX_ALLOWED
- 
--#if (!TARGET_OS_IOS && !TARGET_OS_TV) || TARGET_OS_MACCATALYST || \
-+#if (!TARGET_OS_IOS && !TARGET_OS_TV && !TARGET_OS_VISION) || TARGET_OS_MACCATALYST || \
-     (TARGET_OS_IOS && defined(__IPHONE_16_0) && __IPHONE_OS_VERSION_MIN_REQUIRED >= __IPHONE_16_0)
-     return false;
- #else
-@@ -1541,7 +1543,7 @@ bool SupportsAppleGPUFamily(id<MTLDevice> device, uint8_t appleFamily)
-     MTLFeatureSet featureSet;
-     switch (appleFamily)
-     {
--#    if TARGET_OS_IOS
-+#    if TARGET_OS_IOS || TARGET_OS_VISION
-         case 1:
-             featureSet = MTLFeatureSet_iOS_GPUFamily1_v1;
-             break;
-@@ -1578,7 +1580,7 @@ bool SupportsMacGPUFamily(id<MTLDevice> device, uint8_t macFamily)
+@@ -1634,7 +1634,7 @@ bool SupportsMacGPUFamily(id<MTLDevice> device, uint8_t macFamily)
  #if TARGET_OS_OSX || TARGET_OS_MACCATALYST
  #    if defined(__MAC_10_15)
      // If device supports [MTLDevice supportsFamily:], then use it.

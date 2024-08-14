@@ -790,22 +790,22 @@ index 23b5cafd5..63c72c775 100644
                  UNREACHABLE();
                  break;
 diff --git a/src/libANGLE/renderer/metal/DisplayMtl.h b/src/libANGLE/renderer/metal/DisplayMtl.h
-index 16ae6340e..34aadf0c7 100644
+index caf8d0381..8e632756b 100644
 --- a/src/libANGLE/renderer/metal/DisplayMtl.h
 +++ b/src/libANGLE/renderer/metal/DisplayMtl.h
-@@ -142,6 +142,7 @@ class DisplayMtl : public DisplayImpl
-     bool supportsMetal2_2() const;
+@@ -143,6 +143,7 @@ class DisplayMtl : public DisplayImpl
      bool supportsDepth24Stencil8PixelFormat() const;
      bool supports32BitFloatFiltering() const;
+     bool supportsBCTextureCompression() const;
 +    bool supportsVariableRasterizationRate() const;
      bool isAMD() const;
      bool isAMDBronzeDriver() const;
      bool isAMDFireProDevice() const;
 diff --git a/src/libANGLE/renderer/metal/DisplayMtl.mm b/src/libANGLE/renderer/metal/DisplayMtl.mm
-index 2e9e23f1b..570d0ef5e 100644
+index 7124d8171..4ea4e66a9 100644
 --- a/src/libANGLE/renderer/metal/DisplayMtl.mm
 +++ b/src/libANGLE/renderer/metal/DisplayMtl.mm
-@@ -1170,6 +1170,11 @@ void DisplayMtl::initializeExtensions() const
+@@ -1167,6 +1167,11 @@ void DisplayMtl::initializeExtensions() const
              mNativeCaps.maxImageUnits = gl::IMPLEMENTATION_MAX_PIXEL_LOCAL_STORAGE_PLANES;
          }
      }
@@ -817,7 +817,7 @@ index 2e9e23f1b..570d0ef5e 100644
      // "The GPUs in Apple3 through Apple8 families only support memory barriers for compute command
      // encoders, and for vertex-to-vertex and vertex-to-fragment stages of render command encoders."
      mHasFragmentMemoryBarriers = !supportsAppleGPUFamily(3);
-@@ -1242,6 +1247,8 @@ void DisplayMtl::initializeFeatures()
+@@ -1239,6 +1244,8 @@ void DisplayMtl::initializeFeatures()
                              supportsMetal2_1() && (isOSX || isCatalyst) && !isARM);
      ANGLE_FEATURE_CONDITION((&mFeatures), hasDepthAutoResolve, supportsEitherGPUFamily(3, 2));
      ANGLE_FEATURE_CONDITION((&mFeatures), hasStencilAutoResolve, supportsEitherGPUFamily(5, 2));
@@ -826,7 +826,7 @@ index 2e9e23f1b..570d0ef5e 100644
      ANGLE_FEATURE_CONDITION((&mFeatures), allowMultisampleStoreAndResolve,
                              supportsEitherGPUFamily(3, 1));
  
-@@ -1446,6 +1453,17 @@ bool DisplayMtl::supportsDepth24Stencil8PixelFormat() const
+@@ -1461,6 +1468,17 @@ bool DisplayMtl::supportsDepth24Stencil8PixelFormat() const
      return false;
  #endif
  }
@@ -858,7 +858,7 @@ index 252af66fc..0dddfd442 100644
      if (blitColorBuffer)
      {
 diff --git a/src/libANGLE/renderer/metal/mtl_command_buffer.h b/src/libANGLE/renderer/metal/mtl_command_buffer.h
-index 4e8f010a2..07ebff198 100644
+index 74f085009..774d6ab6d 100644
 --- a/src/libANGLE/renderer/metal/mtl_command_buffer.h
 +++ b/src/libANGLE/renderer/metal/mtl_command_buffer.h
 @@ -427,7 +427,8 @@ class RenderCommandEncoder final : public CommandEncoder
@@ -881,10 +881,10 @@ index 4e8f010a2..07ebff198 100644
  
      void pushDebugGroup(NSString *label) override;
 diff --git a/src/libANGLE/renderer/metal/mtl_command_buffer.mm b/src/libANGLE/renderer/metal/mtl_command_buffer.mm
-index 2400e430c..029247f71 100644
+index d71a992e3..8bfad3808 100644
 --- a/src/libANGLE/renderer/metal/mtl_command_buffer.mm
 +++ b/src/libANGLE/renderer/metal/mtl_command_buffer.mm
-@@ -1811,12 +1811,20 @@ RenderCommandEncoder &RenderCommandEncoder::setViewport(const MTLViewport &viewp
+@@ -1828,12 +1828,20 @@ RenderCommandEncoder &RenderCommandEncoder::setViewport(const MTLViewport &viewp
      return *this;
  }
  
@@ -908,7 +908,7 @@ index 2400e430c..029247f71 100644
  
      MTLScissorRect clampedRect = {rect.x, rect.y, std::min(rect.width, clampedWidth),
                                    std::min(rect.height, clampedHeight)};
-@@ -1828,6 +1836,22 @@ RenderCommandEncoder &RenderCommandEncoder::setScissorRect(const MTLScissorRect
+@@ -1845,6 +1853,22 @@ RenderCommandEncoder &RenderCommandEncoder::setScissorRect(const MTLScissorRect
  
      mStateCache.scissorRect = clampedRect;
  
@@ -931,7 +931,7 @@ index 2400e430c..029247f71 100644
      mCommands.push(CmdType::SetScissorRect).push(clampedRect);
  
      return *this;
-@@ -2328,6 +2352,15 @@ RenderCommandEncoder &RenderCommandEncoder::setStencilLoadAction(MTLLoadAction a
+@@ -2345,6 +2369,15 @@ RenderCommandEncoder &RenderCommandEncoder::setStencilLoadAction(MTLLoadAction a
      return *this;
  }
  
@@ -1057,10 +1057,10 @@ index 000000000..23e8295bc
 +if __name__ == '__main__':
 +    sys.exit(main())
 diff --git a/src/libANGLE/renderer/vulkan/ContextVk.cpp b/src/libANGLE/renderer/vulkan/ContextVk.cpp
-index 9a4828b31..f72c66351 100644
+index 857c30d71..2ad346c46 100644
 --- a/src/libANGLE/renderer/vulkan/ContextVk.cpp
 +++ b/src/libANGLE/renderer/vulkan/ContextVk.cpp
-@@ -5929,6 +5929,10 @@ angle::Result ContextVk::syncState(const gl::Context *context,
+@@ -5924,6 +5924,10 @@ angle::Result ContextVk::syncState(const gl::Context *context,
                              break;
                          case gl::state::EXTENDED_DIRTY_BIT_BLEND_ADVANCED_COHERENT:
                              break;
@@ -1346,7 +1346,7 @@ index 4cfd778a6..63fc1cb00 100644
      {"glBindProgramPipelineEXT", P(GL_BindProgramPipelineEXT)},
      {"glBindRenderbuffer", P(GL_BindRenderbuffer)},
 diff --git a/util/autogen/angle_features_autogen.cpp b/util/autogen/angle_features_autogen.cpp
-index 6d1ab39cd..88fb46781 100644
+index 07d165038..9b361e560 100644
 --- a/util/autogen/angle_features_autogen.cpp
 +++ b/util/autogen/angle_features_autogen.cpp
 @@ -204,6 +204,7 @@ constexpr PackedEnumMap<Feature, const char *> kFeatureNames = {{
@@ -1358,7 +1358,7 @@ index 6d1ab39cd..88fb46781 100644
      {Feature::InitializeCurrentVertexAttributes, "initializeCurrentVertexAttributes"},
      {Feature::InjectAsmStatementIntoLoopBodies, "injectAsmStatementIntoLoopBodies"},
 diff --git a/util/autogen/angle_features_autogen.h b/util/autogen/angle_features_autogen.h
-index ec75bebca..9a050356a 100644
+index d755e7290..5a42655f6 100644
 --- a/util/autogen/angle_features_autogen.h
 +++ b/util/autogen/angle_features_autogen.h
 @@ -204,6 +204,7 @@ enum class Feature

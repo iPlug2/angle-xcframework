@@ -84,10 +84,10 @@ index 42c8ed6ad..b8bc61343 100644
  
    # Set target.
    common_flags = [
-diff --git a/config/ios/codesign.py b/config/ios/codesign.py
+diff --git a/config/apple/codesign.py b/config/apple/codesign.py
 index fd96f312d..b2f43cb9b 100644
---- a/config/ios/codesign.py
-+++ b/config/ios/codesign.py
+--- a/config/apple/codesign.py
++++ b/config/apple/codesign.py
 @@ -91,6 +91,8 @@ class Bundle(object):
    def Kind(platform, extension):
      if platform == 'iphonesimulator' or platform == 'iphoneos':

@@ -70,12 +70,12 @@ index 76c5c99f0..a99eff17f 100644
          directory = GetExecutableDirectory() + "/Frameworks/";
  #elif ANGLE_PLATFORM_FUCHSIA
 diff --git a/src/gpu_info_util/SystemInfo_macos.mm b/src/gpu_info_util/SystemInfo_macos.mm
-index 553c67568..dea55d289 100644
+index ca3d88092..063a96cb7 100644
 --- a/src/gpu_info_util/SystemInfo_macos.mm
 +++ b/src/gpu_info_util/SystemInfo_macos.mm
-@@ -15,10 +15,22 @@
- #include "common/apple_platform_utils.h"
- #include "common/gl/cgl/FunctionsCGL.h"
+@@ -18,10 +18,22 @@
+ #    include "common/gl/cgl/FunctionsCGL.h"
+ #endif
  
 -#if !defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 120000
 -#    define HAVE_MAIN_PORT_DEFAULT 1
@@ -108,16 +108,16 @@ index 553c67568..dea55d289 100644
      {
          id<MTLDevice> device = CGDirectDisplayCopyCurrentMetalDevice(displayID);
          if (device)
-@@ -235,7 +247,7 @@ uint64_t GetGpuIDFromDisplayID(uint32_t displayID)
+@@ -239,7 +251,7 @@ uint64_t GetGpuIDFromDisplayID(uint32_t displayID)
  // Used with permission.
  uint64_t GetGpuIDFromOpenGLDisplayMask(uint32_t displayMask)
  {
 -    if (@available(macOS 10.13, *))
 +    if (@available(macOS 10.13, macCatalyst 13.0, *))
      {
-         GLint numRenderers              = 0;
-         CGLRendererInfoObj rendererInfo = nullptr;
-@@ -282,7 +294,7 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
+         constexpr CGLRendererProperty kCGLRPRegistryIDLow  = static_cast<CGLRendererProperty>(140);
+         constexpr CGLRendererProperty kCGLRPRegistryIDHigh = static_cast<CGLRendererProperty>(141);
+@@ -290,7 +302,7 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
  {
  #if defined(ANGLE_PLATFORM_MACOS)
      // On macOS, the following code is only supported since 10.13.
@@ -126,7 +126,7 @@ index 553c67568..dea55d289 100644
  #endif
      {
          // Get a matching dictionary for the IOGraphicsAccelerator2
-@@ -330,7 +342,9 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
+@@ -338,7 +350,9 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
  
          return vendorId;
      }
@@ -136,7 +136,7 @@ index 553c67568..dea55d289 100644
  }
  
  bool GetSystemInfo_mac(SystemInfo *info)
-@@ -358,7 +372,7 @@ bool GetSystemInfo_mac(SystemInfo *info)
+@@ -366,7 +380,7 @@ bool GetSystemInfo_mac(SystemInfo *info)
  
      // Then override the activeGPUIndex field of info to reflect the current
      // GPU instead of the non-intel GPU

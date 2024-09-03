@@ -69,6 +69,19 @@ index 76c5c99f0..a99eff17f 100644
          // On iOS, shared libraries must be loaded from within the app bundle.
          directory = GetExecutableDirectory() + "/Frameworks/";
  #elif ANGLE_PLATFORM_FUCHSIA
+diff --git a/src/gpu_info_util/SystemInfo_internal.h b/src/gpu_info_util/SystemInfo_internal.h
+index 5cef5d49e..030d0ccad 100644
+--- a/src/gpu_info_util/SystemInfo_internal.h
++++ b/src/gpu_info_util/SystemInfo_internal.h
+@@ -43,7 +43,7 @@ uint64_t GetGpuIDFromOpenGLDisplayMask(uint32_t displayMask);
+ 
+ #endif
+ 
+-#if defined(ANGLE_PLATFORM_MACOS) && ANGLE_ENABLE_METAL
++#if (defined(ANGLE_PLATFORM_MACOS) || defined(ANGLE_PLATFORM_MACCATALYST)) && ANGLE_ENABLE_METAL
+ // Get VendorID from metal device's registry ID
+ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID);
+ #endif
 diff --git a/src/libGLESv2.gni b/src/libGLESv2.gni
 index 41bd81aa1..b6b36ccb4 100644
 --- a/src/libGLESv2.gni

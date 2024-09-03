@@ -1,5 +1,5 @@
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 889cf7462..91cb0d14e 100644
+index 7c3ed830e..e7d6ef5c6 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
 @@ -1954,28 +1954,12 @@ config("default_warnings") {
@@ -31,15 +31,15 @@ index 889cf7462..91cb0d14e 100644
      }
  
      # Some builders, such as Cronet, use a different version of Clang than
-@@ -2895,7 +2879,7 @@ config("symbols") {
+@@ -2899,7 +2883,7 @@ config("symbols") {
      configs += [ "//build/config:compress_debug_sections" ]
    }
  
--  if (is_clang && !is_nacl && !is_chromeos) {
-+  if (is_clang && !is_nacl && !is_chromeos && !is_apple) {
+-  if (is_clang && !is_nacl && is_win && !is_component_build) {
++  if (is_clang && !is_nacl && is_win && !is_component_build && is_apple) {
      # Remove unreferenced methods to reduce type info in symbols.
      # See: https://github.com/llvm/llvm-project/pull/87018.
-     cflags += [ "-gomit-unreferenced-methods" ]
+     # The downside with this flag is precisely that: Unreferenced methods get
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
 index 295f36de0..9dfb220d1 100644
 --- a/config/ios/BUILD.gn

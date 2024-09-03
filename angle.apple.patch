@@ -1,5 +1,5 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 4cd1b6928..8c57319ff 100644
+index a82081b22..3399e0d31 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
 @@ -694,6 +694,7 @@ angle_static_library("angle_gpu_info_util") {
@@ -69,82 +69,6 @@ index 76c5c99f0..a99eff17f 100644
          // On iOS, shared libraries must be loaded from within the app bundle.
          directory = GetExecutableDirectory() + "/Frameworks/";
  #elif ANGLE_PLATFORM_FUCHSIA
-diff --git a/src/gpu_info_util/SystemInfo_macos.mm b/src/gpu_info_util/SystemInfo_macos.mm
-index ca3d88092..063a96cb7 100644
---- a/src/gpu_info_util/SystemInfo_macos.mm
-+++ b/src/gpu_info_util/SystemInfo_macos.mm
-@@ -18,10 +18,22 @@
- #    include "common/gl/cgl/FunctionsCGL.h"
- #endif
- 
--#if !defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 120000
--#    define HAVE_MAIN_PORT_DEFAULT 1
-+#if defined(ANGLE_PLATFORM_MACOS)
-+
-+#    if !defined(__MAC_OS_X_VERSION_MIN_REQUIRED) || __MAC_OS_X_VERSION_MIN_REQUIRED >= 120000
-+#        define HAVE_MAIN_PORT_DEFAULT 1
-+#    else
-+#        define HAVE_MAIN_PORT_DEFAULT 0
-+#    endif
-+
- #else
--#    define HAVE_MAIN_PORT_DEFAULT 0
-+
-+#    if !defined(__IPHONE_OS_VERSION_MIN_REQUIRED) || __IPHONE_OS_VERSION_MIN_REQUIRED >= 150000
-+#        define HAVE_MAIN_PORT_DEFAULT 1
-+#    else
-+#        define HAVE_MAIN_PORT_DEFAULT 0
-+#    endif
-+
- #endif
- 
- namespace angle
-@@ -216,7 +228,7 @@ uint64_t GetGpuIDFromDisplayID(uint32_t displayID)
- {
-     // First attempt to use query the registryID from a Metal device before falling back to CGL.
-     // This avoids loading the OpenGL framework when possible.
--    if (@available(macOS 10.13, *))
-+    if (@available(macOS 10.13, macCatalyst 13.0, *))
-     {
-         id<MTLDevice> device = CGDirectDisplayCopyCurrentMetalDevice(displayID);
-         if (device)
-@@ -239,7 +251,7 @@ uint64_t GetGpuIDFromDisplayID(uint32_t displayID)
- // Used with permission.
- uint64_t GetGpuIDFromOpenGLDisplayMask(uint32_t displayMask)
- {
--    if (@available(macOS 10.13, *))
-+    if (@available(macOS 10.13, macCatalyst 13.0, *))
-     {
-         constexpr CGLRendererProperty kCGLRPRegistryIDLow  = static_cast<CGLRendererProperty>(140);
-         constexpr CGLRendererProperty kCGLRPRegistryIDHigh = static_cast<CGLRendererProperty>(141);
-@@ -290,7 +302,7 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
- {
- #if defined(ANGLE_PLATFORM_MACOS)
-     // On macOS, the following code is only supported since 10.13.
--    if (@available(macOS 10.13, *))
-+    if (@available(macOS 10.13, macCatalyst 13.0, *))
- #endif
-     {
-         // Get a matching dictionary for the IOGraphicsAccelerator2
-@@ -338,7 +350,9 @@ VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID)
- 
-         return vendorId;
-     }
-+#if defined(ANGLE_PLATFORM_MACOS)
-     return 0;
-+#endif
- }
- 
- bool GetSystemInfo_mac(SystemInfo *info)
-@@ -366,7 +380,7 @@ bool GetSystemInfo_mac(SystemInfo *info)
- 
-     // Then override the activeGPUIndex field of info to reflect the current
-     // GPU instead of the non-intel GPU
--    if (@available(macOS 10.13, *))
-+    if (@available(macOS 10.13, macCatalyst 13.0, *))
-     {
-         ForceGPUSwitchIndex(info);
-     }
 diff --git a/src/libGLESv2.gni b/src/libGLESv2.gni
 index 41bd81aa1..b6b36ccb4 100644
 --- a/src/libGLESv2.gni

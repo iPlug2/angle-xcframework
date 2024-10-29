@@ -1,11 +1,11 @@
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 7c3ed830e..e7d6ef5c6 100644
+index 80ff9bded..7f385d791 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -1954,28 +1954,12 @@ config("default_warnings") {
- 
-         # TODO(crbug.com/40286317): Evaluate and possibly enable.
-         "-Wno-vla-extension",
+@@ -1967,28 +1967,12 @@ config("default_warnings") {
+       cflags += [
+         # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
+         "-Wno-cast-function-type",
 -
 -        # TODO(crbug.com/40284799): Fix and re-enable.
 -        "-Wno-thread-safety-reference-return",
@@ -31,7 +31,7 @@ index 7c3ed830e..e7d6ef5c6 100644
      }
  
      # Some builders, such as Cronet, use a different version of Clang than
-@@ -2899,7 +2883,7 @@ config("symbols") {
+@@ -2912,7 +2896,7 @@ config("symbols") {
      configs += [ "//build/config:compress_debug_sections" ]
    }
  
@@ -98,10 +98,10 @@ index 295f36de0..9dfb220d1 100644
    args = [
      "--output",
 diff --git a/config/ios/rules.gni b/config/ios/rules.gni
-index 741b45ec6..98aad699b 100644
+index 5e2ca6e84..dc449f8f6 100644
 --- a/config/ios/rules.gni
 +++ b/config/ios/rules.gni
-@@ -1904,9 +1904,13 @@ template("ios_xcuitest_test_runner_bundle") {
+@@ -1942,9 +1942,13 @@ template("ios_xcuitest_test_runner_bundle") {
      testonly = true
      script = "//build/apple/plist_util.py"
  
@@ -117,7 +117,7 @@ index 741b45ec6..98aad699b 100644
        # NOTE: The XCTRunnerAddition+Info.plist must come after the Info.plist
        # because it overrides the values under "CFBundleIdentifier" and
        # "CFBundleName".
-@@ -1951,7 +1955,11 @@ template("ios_xcuitest_test_runner_bundle") {
+@@ -1989,7 +1993,11 @@ template("ios_xcuitest_test_runner_bundle") {
      testonly = true
      visibility = [ ":$_target_name" ]
  

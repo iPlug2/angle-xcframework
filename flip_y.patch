@@ -1,8 +1,8 @@
 diff --git a/src/libANGLE/renderer/metal/ContextMtl.mm b/src/libANGLE/renderer/metal/ContextMtl.mm
-index 92f6dd0837..35ed007fcf 100644
+index c013093ec0..d04ad9c52c 100644
 --- a/src/libANGLE/renderer/metal/ContextMtl.mm
 +++ b/src/libANGLE/renderer/metal/ContextMtl.mm
-@@ -1482,7 +1482,7 @@ ProgramExecutableImpl *ContextMtl::createProgramExecutable(const gl::ProgramExec
+@@ -1505,7 +1505,7 @@ ProgramExecutableImpl *ContextMtl::createProgramExecutable(const gl::ProgramExec
  // Framebuffer creation
  FramebufferImpl *ContextMtl::createFramebuffer(const gl::FramebufferState &state)
  {
@@ -12,10 +12,10 @@ index 92f6dd0837..35ed007fcf 100644
  
  // Texture creation
 diff --git a/src/libANGLE/renderer/metal/DisplayMtl.mm b/src/libANGLE/renderer/metal/DisplayMtl.mm
-index 33f0303e54..cfde4651c5 100644
+index 6d24b3273b..81fedacb55 100644
 --- a/src/libANGLE/renderer/metal/DisplayMtl.mm
 +++ b/src/libANGLE/renderer/metal/DisplayMtl.mm
-@@ -943,6 +943,8 @@ void DisplayMtl::initializeExtensions() const
+@@ -910,6 +910,8 @@ void DisplayMtl::initializeExtensions() const
      // Reset
      mNativeExtensions = gl::Extensions();
  
@@ -25,7 +25,7 @@ index 33f0303e54..cfde4651c5 100644
      // NOTE(hqle): Support full mapBufferRangeEXT extension.
      mNativeExtensions.mapbufferOES                  = true;
 diff --git a/src/libANGLE/renderer/metal/FrameBufferMtl.h b/src/libANGLE/renderer/metal/FrameBufferMtl.h
-index f979c4849f..828945f4c4 100644
+index 84e5326b72..29d0c3d4d7 100644
 --- a/src/libANGLE/renderer/metal/FrameBufferMtl.h
 +++ b/src/libANGLE/renderer/metal/FrameBufferMtl.h
 @@ -29,7 +29,7 @@ class SurfaceMtl;
@@ -38,10 +38,10 @@ index f979c4849f..828945f4c4 100644
      void destroy(const gl::Context *context) override;
  
 diff --git a/src/libANGLE/renderer/metal/FrameBufferMtl.mm b/src/libANGLE/renderer/metal/FrameBufferMtl.mm
-index 573f1b4e20..4f508bdf9d 100644
+index f97f7b0af7..bf36c29df7 100644
 --- a/src/libANGLE/renderer/metal/FrameBufferMtl.mm
 +++ b/src/libANGLE/renderer/metal/FrameBufferMtl.mm
-@@ -56,11 +56,11 @@ const gl::InternalFormat &GetReadAttachmentInfo(const gl::Context *context,
+@@ -125,11 +125,11 @@ angle::Result Copy2DTextureSlice0Level0ToTempTexture(const gl::Context *context,
  }  // namespace
  
  // FramebufferMtl implementation
@@ -55,7 +55,7 @@ index 573f1b4e20..4f508bdf9d 100644
  {
      reset();
  }
-@@ -640,6 +640,9 @@ angle::Result FramebufferMtl::syncState(const gl::Context *context,
+@@ -707,6 +707,9 @@ angle::Result FramebufferMtl::syncState(const gl::Context *context,
      {
          switch (dirtyBit)
          {

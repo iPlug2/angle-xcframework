@@ -1,8 +1,8 @@
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 80ff9bded..7f385d791 100644
+index 6c186c68b..fccd8daec 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -1967,28 +1967,12 @@ config("default_warnings") {
+@@ -1972,33 +1972,12 @@ config("default_warnings") {
        cflags += [
          # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
          "-Wno-cast-function-type",
@@ -27,11 +27,16 @@ index 80ff9bded..7f385d791 100644
 -
 -        # TODO(crbug.com/356172342): Fix and re-enable.
 -        cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
+-
+-        if (llvm_force_head_revision) {
+-          # TODO(crbug.com/376641662): Fix and re-enable.
+-          cflags_cc += [ "-Wno-nontrivial-memaccess" ]
+-        }
 -      }
      }
  
      # Some builders, such as Cronet, use a different version of Clang than
-@@ -2912,7 +2896,7 @@ config("symbols") {
+@@ -2952,7 +2931,7 @@ config("symbols") {
      configs += [ "//build/config:compress_debug_sections" ]
    }
  

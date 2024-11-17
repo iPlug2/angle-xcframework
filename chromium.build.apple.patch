@@ -1,5 +1,5 @@
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 6c186c68b..fccd8daec 100644
+index f58320b88..fccd8daec 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
 @@ -1972,33 +1972,12 @@ config("default_warnings") {
@@ -30,7 +30,7 @@ index 6c186c68b..fccd8daec 100644
 -
 -        if (llvm_force_head_revision) {
 -          # TODO(crbug.com/376641662): Fix and re-enable.
--          cflags_cc += [ "-Wno-nontrivial-memaccess" ]
+-          cflags += [ "-Wno-nontrivial-memaccess" ]
 -        }
 -      }
      }
@@ -46,10 +46,10 @@ index 6c186c68b..fccd8daec 100644
      # See: https://github.com/llvm/llvm-project/pull/87018.
      # The downside with this flag is precisely that: Unreferenced methods get
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index 295f36de0..9dfb220d1 100644
+index a3c560a62..8a912beb1 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
-@@ -255,6 +255,14 @@ group("xctest") {
+@@ -257,6 +257,14 @@ group("xctest") {
  _xctrunner_path =
      "$ios_sdk_platform_path/Developer/Library/Xcode/Agents/XCTRunner.app"
  
@@ -64,7 +64,7 @@ index 295f36de0..9dfb220d1 100644
  # When building with RBE, $ios_sdk_platform_path corresponds to a symlink
  # below $root_build_dir that points to the real SDK to use. Because the files
  # are below $root_build_dir, it is not possible to list them as a target input
-@@ -268,15 +276,24 @@ _xctrunner_path =
+@@ -270,15 +278,24 @@ _xctrunner_path =
  # To workaround this, add a target that pretends to create those files
  # (but does nothing). See https://crbug.com/1061487 for why this is needed.
  if (ios_use_xcode_symlinks) {
@@ -93,7 +93,7 @@ index 295f36de0..9dfb220d1 100644
  }
  
  # When creating the test runner for an XCUITest, the arm64e slice of the binary
-@@ -285,7 +302,7 @@ if (ios_use_xcode_symlinks) {
+@@ -287,7 +304,7 @@ if (ios_use_xcode_symlinks) {
  action("xctest_runner_without_arm64e") {
    testonly = true
    script = "//build/config/ios/strip_arm64e.py"

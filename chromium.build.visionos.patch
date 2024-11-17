@@ -1,34 +1,46 @@
 diff --git a/config/apple/codesign.py b/config/apple/codesign.py
-index fd96f312d..b2f43cb9b 100644
+index be6afb5af..c6795656e 100644
 --- a/config/apple/codesign.py
 +++ b/config/apple/codesign.py
 @@ -91,6 +91,8 @@ class Bundle(object):
    def Kind(platform, extension):
-     if platform == 'iphonesimulator' or platform == 'iphoneos':
+     if platform in ('iphoneos', 'iphonesimulator'):
        return 'ios'
 +    if platform == 'xros' or platform == 'xrsimulator':
 +      return 'xros'
      if platform == 'macosx':
        if extension == '.framework':
          return 'mac_framework'
+diff --git a/config/apple/mobile_config.gni b/config/apple/mobile_config.gni
+index 3c1219b32..6c269316e 100644
+--- a/config/apple/mobile_config.gni
++++ b/config/apple/mobile_config.gni
+@@ -9,6 +9,7 @@ declare_args() {
+   # default is only there for compatibility reasons and will be removed (see
+   # crbug.com/1138425 for more details).
+   target_environment = ""
++  target_os_variation = ""
+ 
+   # Control whether codesiging is enabled (ignored for simulator builds).
+   # TODO(crbug.com/378918882): Prefix with apple_mobile_ instead of ios_.
 diff --git a/config/apple/sdk_info.py b/config/apple/sdk_info.py
-index 81b06d438..94b260971 100755
+index 3308c10a9..563616648 100755
 --- a/config/apple/sdk_info.py
 +++ b/config/apple/sdk_info.py
-@@ -134,7 +134,7 @@ def main():
-                       default='.',
-                       help='Value of gn $root_build_dir')
+@@ -136,7 +136,7 @@ def main():
    parser.add_argument('platform',
--                      choices=['iphoneos', 'iphonesimulator', 'macosx'])
-+                      choices=['iphoneos', 'iphonesimulator', 'macosx', 'xros', 'xrsimulator'])
+                       choices=[
+                           'iphoneos', 'iphonesimulator', 'macosx', 'watchos',
+-                          'watchsimulator'
++                          'watchsimulator', 'xros', 'xrsimulator'
+                       ])
    args = parser.parse_args()
    if args.developer_dir:
-     os.environ['DEVELOPER_DIR'] = args.developer_dir
 diff --git a/config/clang/BUILD.gn b/config/clang/BUILD.gn
-index 9b8719a64..77b9cf646 100644
+index f27d52c3b..1ddf4cc77 100644
 --- a/config/clang/BUILD.gn
 +++ b/config/clang/BUILD.gn
-@@ -239,7 +239,13 @@ clang_lib("compiler_builtins") {
+@@ -216,7 +216,13 @@ clang_lib("compiler_builtins") {
    if (is_mac) {
      libname = "osx"
    } else if (is_ios) {
@@ -44,10 +56,10 @@ index 9b8719a64..77b9cf646 100644
      } else if (target_environment == "catalyst") {
        libname = "osx"
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index a19be8e99..9f601b4cc 100644
+index fccd8daec..065eb3462 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -585,24 +585,6 @@ config("compiler") {
+@@ -591,24 +591,6 @@ config("compiler") {
        }
      }
  
@@ -72,7 +84,7 @@ index a19be8e99..9f601b4cc 100644
      # TODO(crbug.com/40192287): Investigate why/if this should be needed.
      if (is_win) {
        cflags += [ "/clang:-ffp-contract=off" ]
-@@ -1905,6 +1887,7 @@ config("default_warnings") {
+@@ -1927,6 +1909,7 @@ config("default_warnings") {
        # Disables.
        "-Wno-missing-field-initializers",  # "struct foo f = {0};"
        "-Wno-unused-parameter",  # Unused function parameters.
@@ -81,10 +93,10 @@ index a19be8e99..9f601b4cc 100644
  
      cflags_cc += [
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index 9dfb220d1..ffb65288c 100644
+index 8a912beb1..cf7f711d2 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
-@@ -40,7 +40,11 @@ config("compiler") {
+@@ -42,7 +42,11 @@ config("compiler") {
    }
  
    # OS.
@@ -97,23 +109,11 @@ index 9dfb220d1..ffb65288c 100644
  
    # Set target.
    common_flags = [
-diff --git a/config/ios/config.gni b/config/ios/config.gni
-index 2b7a8f60c..480a87e88 100644
---- a/config/ios/config.gni
-+++ b/config/ios/config.gni
-@@ -9,6 +9,7 @@ declare_args() {
-   # default is only there for compatibility reasons and will be removed (see
-   # crbug.com/1138425 for more details).
-   target_environment = ""
-+  target_os_variation = ""
- 
-   # Generate orderfile at application startup and then exit.
-   # NOTE: This flag adds runtime tooling to capture function call details,
 diff --git a/config/ios/ios_sdk.gni b/config/ios/ios_sdk.gni
-index fed4e917d..80970f259 100644
+index 448f82718..b7641a183 100644
 --- a/config/ios/ios_sdk.gni
 +++ b/config/ios/ios_sdk.gni
-@@ -97,7 +97,17 @@ ios_use_xcode_symlinks =
+@@ -63,7 +63,17 @@ ios_use_xcode_symlinks =
  
  if (ios_sdk_path == "") {
    # Compute default target.
@@ -133,7 +133,7 @@ index fed4e917d..80970f259 100644
      ios_sdk_platform = "iPhoneSimulator"
    } else if (target_environment == "device") {
 diff --git a/toolchain/apple/toolchain.gni b/toolchain/apple/toolchain.gni
-index ab7378fe2..e8449e22d 100644
+index 5cf427c25..d35cceebe 100644
 --- a/toolchain/apple/toolchain.gni
 +++ b/toolchain/apple/toolchain.gni
 @@ -450,7 +450,7 @@ template("single_apple_toolchain") {

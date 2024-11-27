@@ -22,6 +22,9 @@ create_framework()
   cd Versions
   ln -s A Current
   cd ../..
+  echo "Move dsym"
+  mv $1.dylib.dSYM $1.dSYM
+  mv $1.dSYM/Contents/Resources/DWARF/$1.dylib $1.dSYM/Contents/Resources/DWARF/$1
 }
 
 create_framework "libEGL"

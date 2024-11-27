@@ -45,12 +45,12 @@ build_xcframwork()
     cp PrivacyInfo.xcprivacy VisionOS/arm64/$1.framework
   fi
 
-  xcodebuild -create-xcframework -framework iOS/arm64/$1.framework -debug-symbols iOS/arm64/$1.dSYM \
-                                 -framework VisionOS/arm64/$1.framework -debug-symbols VisionOS/arm64/$1.dSYM \
-                                 -framework VisionOSSimulator/Universal/$1.framework -debug-symbols VisionOSSimulator/Universal/$1.dSYM \
-                                 -framework Catalyst/Universal/$1.framework -debug-symbols Catalyst/Universal/$1.dSYM \
-                                 -framework Simulator/Universal/$1.framework -debug-symbols Simulator/Universal/$1.dSYM \
-                                 -framework Mac/Universal/$1.framework -debug-symbols Mac/Universal/$1.dSYM \
+  xcodebuild -create-xcframework -framework `pwd`/iOS/arm64/$1.framework -debug-symbols `pwd`/iOS/arm64/$1.dSYM \
+                                 -framework `pwd`/VisionOS/arm64/$1.framework -debug-symbols `pwd`/VisionOS/arm64/$1.dSYM \
+                                 -framework `pwd`/VisionOSSimulator/Universal/$1.framework -debug-symbols `pwd`/VisionOSSimulator/Universal/$1.dSYM \
+                                 -framework `pwd`/Catalyst/Universal/$1.framework -debug-symbols `pwd`/Catalyst/Universal/$1.dSYM \
+                                 -framework `pwd`/Simulator/Universal/$1.framework -debug-symbols `pwd`/Simulator/Universal/$1.dSYM \
+                                 -framework `pwd`/Mac/Universal/$1.framework -debug-symbols `pwd`/Mac/Universal/$1.dSYM \
                                  -output $1.xcframework
 }
 

@@ -45,12 +45,12 @@ build_xcframwork()
     cp PrivacyInfo.xcprivacy VisionOS/arm64/$1.framework
   fi
 
-  xcodebuild -create-xcframework -framework `pwd`/iOS/arm64/$1.framework -debug-symbols `pwd`/iOS/arm64/$1.dSYM \
-                                 -framework `pwd`/VisionOS/arm64/$1.framework -debug-symbols `pwd`/VisionOS/arm64/$1.dSYM \
-                                 -framework `pwd`/VisionOSSimulator/Universal/$1.framework -debug-symbols `pwd`/VisionOSSimulator/Universal/$1.dSYM \
-                                 -framework `pwd`/Catalyst/Universal/$1.framework -debug-symbols `pwd`/Catalyst/Universal/$1.dSYM \
-                                 -framework `pwd`/Simulator/Universal/$1.framework -debug-symbols `pwd`/Simulator/Universal/$1.dSYM \
-                                 -framework `pwd`/Mac/Universal/$1.framework -debug-symbols `pwd`/Mac/Universal/$1.dSYM \
+  xcodebuild -create-xcframework -framework `pwd`/iOS/arm64/$1.framework \
+                                 -framework `pwd`/VisionOS/arm64/$1.framework \
+                                 -framework `pwd`/VisionOSSimulator/Universal/$1.framework \
+                                 -framework `pwd`/Catalyst/Universal/$1.framework \
+                                 -framework `pwd`/Simulator/Universal/$1.framework \
+                                 -framework `pwd`/Mac/Universal/$1.framework \
                                  -output $1.xcframework
 }
 

@@ -1,14 +1,45 @@
+diff --git a/config/BUILDCONFIG.gn b/config/BUILDCONFIG.gn
+index c2212c73c..5ad72bc9c 100644
+--- a/config/BUILDCONFIG.gn
++++ b/config/BUILDCONFIG.gn
+@@ -557,7 +557,7 @@ foreach(_target_type,
+       if (is_clang &&
+           (!defined(invoker.no_default_deps) || !invoker.no_default_deps)) {
+         # This is necessary for Clang modules builds.
+-        deps += [ "//buildtools/third_party/libc++:std" ]
++        # deps += [ "//buildtools/third_party/libc++:std" ]
+       }
+ 
+       # Consumed by the unsafe-buffers plugin during compile.
+@@ -641,10 +641,10 @@ foreach(_target_type,
+         if (is_clang) {
+           # These are necessary for Clang modules builds.
+           deps += [
+-            "//buildtools/third_party/libc++:_Builtin_limits",
+-            "//buildtools/third_party/libc++:_Builtin_stdarg",
+-            "//buildtools/third_party/libc++:_Builtin_stddef",
+-            "//buildtools/third_party/libc++:std",
++            # "//buildtools/third_party/libc++:_Builtin_limits",
++            # "//buildtools/third_party/libc++:_Builtin_stdarg",
++            # "//buildtools/third_party/libc++:_Builtin_stddef",
++            # "//buildtools/third_party/libc++:std",
+           ]
+         }
+       }
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index 93ab7b5ec..860252fab 100644
+index ae6cbc24e..ca562b137 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -1962,31 +1962,12 @@ config("default_warnings") {
+@@ -1974,28 +1974,12 @@ config("default_warnings") {
        cflags += [
          # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
          "-Wno-cast-function-type",
 -
 -        # TODO(crbug.com/40284799): Fix and re-enable.
 -        "-Wno-thread-safety-reference-return",
+-
+-        # TODO(crbug.com/376641662): Fix and re-enable.
+-        "-Wno-nontrivial-memcall",
        ]
  
        cflags_cc += [
@@ -24,17 +55,11 @@ index 93ab7b5ec..860252fab 100644
 -
 -        # TODO(crbug.com/344680447): Fix and re-enable.
 -        cflags_cc += [ "-Wno-missing-template-arg-list-after-template-kw" ]
--
--        # TODO(crbug.com/356172342): Fix and re-enable.
--        cflags_cc += [ "-Wno-dangling-assignment-gsl" ]
--
--        # TODO(crbug.com/376641662): Fix and re-enable.
--        cflags += [ "-Wno-nontrivial-memcall" ]
 -      }
      }
  
      # Some builders, such as Cronet, use a different version of Clang than
-@@ -2935,7 +2916,7 @@ config("symbols") {
+@@ -2946,7 +2930,7 @@ config("symbols") {
      configs += [ "//build/config:compress_debug_sections" ]
    }
  
@@ -101,10 +126,10 @@ index a3c560a62..8a912beb1 100644
    args = [
      "--output",
 diff --git a/config/ios/rules.gni b/config/ios/rules.gni
-index f49b43569..99ef6171d 100644
+index cbc5f1986..635f9fff5 100644
 --- a/config/ios/rules.gni
 +++ b/config/ios/rules.gni
-@@ -1351,9 +1351,13 @@ template("ios_xcuitest_test_runner_bundle") {
+@@ -1352,9 +1352,13 @@ template("ios_xcuitest_test_runner_bundle") {
      testonly = true
      script = "//build/apple/plist_util.py"
  
@@ -120,7 +145,7 @@ index f49b43569..99ef6171d 100644
        # NOTE: The XCTRunnerAddition+Info.plist must come after the Info.plist
        # because it overrides the values under "CFBundleIdentifier" and
        # "CFBundleName".
-@@ -1398,7 +1402,11 @@ template("ios_xcuitest_test_runner_bundle") {
+@@ -1399,7 +1403,11 @@ template("ios_xcuitest_test_runner_bundle") {
      testonly = true
      visibility = [ ":$_target_name" ]
  

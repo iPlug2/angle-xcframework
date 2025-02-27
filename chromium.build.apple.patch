@@ -1,31 +1,31 @@
 diff --git a/config/BUILDCONFIG.gn b/config/BUILDCONFIG.gn
-index c2212c73c..5ad72bc9c 100644
+index b5c5cb75e..e2a433d2f 100644
 --- a/config/BUILDCONFIG.gn
 +++ b/config/BUILDCONFIG.gn
-@@ -557,7 +557,7 @@ foreach(_target_type,
-       if (is_clang &&
-           (!defined(invoker.no_default_deps) || !invoker.no_default_deps)) {
+@@ -561,7 +561,7 @@ foreach(_target_type,
+       if (is_clang && (!defined(invoker.use_libcxx_modules) ||
+                        invoker.use_libcxx_modules)) {
          # This is necessary for Clang modules builds.
 -        deps += [ "//buildtools/third_party/libc++:std" ]
 +        # deps += [ "//buildtools/third_party/libc++:std" ]
        }
  
        # Consumed by the unsafe-buffers plugin during compile.
-@@ -641,10 +641,10 @@ foreach(_target_type,
-         if (is_clang) {
-           # These are necessary for Clang modules builds.
-           deps += [
--            "//buildtools/third_party/libc++:_Builtin_limits",
--            "//buildtools/third_party/libc++:_Builtin_stdarg",
--            "//buildtools/third_party/libc++:_Builtin_stddef",
--            "//buildtools/third_party/libc++:std",
-+            # "//buildtools/third_party/libc++:_Builtin_limits",
-+            # "//buildtools/third_party/libc++:_Builtin_stdarg",
-+            # "//buildtools/third_party/libc++:_Builtin_stddef",
-+            # "//buildtools/third_party/libc++:std",
-           ]
-         }
+@@ -652,10 +652,10 @@ foreach(_target_type,
+                        invoker.use_libcxx_modules)) {
+         # These are necessary for Clang modules builds.
+         deps += [
+-          "//buildtools/third_party/libc++:_Builtin_limits",
+-          "//buildtools/third_party/libc++:_Builtin_stdarg",
+-          "//buildtools/third_party/libc++:_Builtin_stddef",
+-          "//buildtools/third_party/libc++:std",
++          # "//buildtools/third_party/libc++:_Builtin_limits",
++          # "//buildtools/third_party/libc++:_Builtin_stdarg",
++          # "//buildtools/third_party/libc++:_Builtin_stddef",
++          # "//buildtools/third_party/libc++:std",
+         ]
        }
+ 
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
 index ae6cbc24e..ca562b137 100644
 --- a/config/compiler/BUILD.gn

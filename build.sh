@@ -1,5 +1,7 @@
 #!/bin/zsh
 
+set -e
+
 cd `dirname $0`
 
 check_success()
@@ -12,26 +14,43 @@ check_success()
   fi
 }
 
-echo "Fecthing depot tools"
-git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
-check_success
+if [ ! -d "depot_tools" ]; then
+  echo "Fetching depot tools"
+  git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+  check_success
+else
+  echo "Using existing depot tools"
+fi
 
 export PATH=`pwd`/depot_tools:$PATH
 
-mkdir angle
-cd angle
+if [ ! -d "angle" ]; then
+  mkdir angle
+  cd angle
+  echo "Fetching source code"
+  fetch angle
+  check_success
+else
+  cd angle
+  echo "Updating existing checkout"
+  git stash
+  gclient sync
+  check_success
+fi
 
-echo "Fetching source code"
-fetch angle
-check_success
+if [ ! -z "$3" ]; then
+  echo "Checking out tag: $3"
+  git checkout $3
+  check_success
+fi
 
 echo "Apply Apple ANGLE patch"
 git apply ../angle.apple.patch --ignore-whitespace --whitespace=nowarn -3
 check_success
 
- echo "Apply Flip-y ANGLE patch"
- git apply ../flip_y.patch --ignore-whitespace --whitespace=nowarn -3
- check_success
+echo "Apply Flip-y ANGLE patch"
+git apply ../flip_y.patch --ignore-whitespace --whitespace=nowarn -3
+check_success
 
 echo "Apply Variable Rasterization Rate Map ANGLE patch"
 git apply ../variable_rasterization_rate_map.patch --ignore-whitespace --whitespace=nowarn -3
@@ -42,6 +61,7 @@ git apply ../angle.visionos.patch --ignore-whitespace --whitespace=nowarn -3
 check_success
 
 cd build
+git stash
 echo "Apply Apple chromium build patch"
 git apply ../../chromium.build.apple.patch --ignore-whitespace --whitespace=nowarn -3
 check_success

@@ -9,6 +9,7 @@ jobs:
     platform: ${{ parameters.platform }}
     arch: ${{ parameters.arch }}
     xcodeVersion: ${{ '16.2' }}
+    angleTag: ${{ parameters.angleTag }}
 
   steps:
   - script: |
@@ -24,7 +25,7 @@ jobs:
       chmod +x generate_info_plist.sh
       chmod +x create_egl_headers.sh
       chmod +x create_glesv2_headers.sh
-      ./build.sh $(platform) $(arch)
+      ./build.sh $(platform) $(arch) $(angleTag)
     displayName: 'Build'
 
   - task: PublishBuildArtifacts@1

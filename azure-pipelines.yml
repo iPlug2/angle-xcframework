@@ -1,3 +1,7 @@
+variables:
+  - name: angleTag
+    value: 'chrome/m135'  # Default tag, can be overridden in pipeline settings
+
 stages:
 - stage: iOS
   displayName: 'iOS'
@@ -7,6 +11,7 @@ stages:
     parameters:
       platform: iOS
       arch: arm64
+      angleTag: ${{ variables.angleTag }}
 
 - stage: iOSSimulatorARM64
   displayName: 'iOS Simulator (arm64)'
@@ -16,6 +21,7 @@ stages:
     parameters:
       platform: Simulator
       arch: arm64
+      angleTag: ${{ variables.angleTag }}
 
 - stage: iOSSimulatorX64
   displayName: 'iOS Simulator (x64)'
@@ -25,6 +31,7 @@ stages:
     parameters:
       platform: Simulator
       arch: x64
+      angleTag: ${{ variables.angleTag }}
 
 - stage: visionOS
   displayName: 'visionOS'
@@ -34,6 +41,7 @@ stages:
     parameters:
       platform: VisionOS
       arch: arm64
+      angleTag: ${{ variables.angleTag }}
 
 - stage: visionOSSimulatorARM64
   displayName: 'visionOS Simulator (arm64)'
@@ -43,6 +51,7 @@ stages:
     parameters:
       platform: VisionOSSimulator
       arch: arm64
+      angleTag: ${{ variables.angleTag }}
 
 - stage: visionOSSimulatorX64
   displayName: 'visionOS Simulator (x64)'
@@ -52,6 +61,7 @@ stages:
     parameters:
       platform: VisionOSSimulator
       arch: x64
+      angleTag: ${{ variables.angleTag }}
 
 - stage: MacARM64
   displayName: 'Mac (arm64)'
@@ -61,6 +71,7 @@ stages:
     parameters:
       platform: Mac
       arch: arm64
+      angleTag: ${{ variables.angleTag }}
 
 - stage: MacX64
   displayName: 'Mac (x64)'
@@ -70,6 +81,7 @@ stages:
     parameters:
       platform: Mac
       arch: x64
+      angleTag: ${{ variables.angleTag }}
 
 - stage: CatalystARM64
   displayName: 'Catalyst (arm64)'
@@ -79,6 +91,7 @@ stages:
     parameters:
       platform: Catalyst
       arch: arm64
+      angleTag: ${{ variables.angleTag }}
 
 - stage: CatalystX64
   displayName: 'Catalyst (x64)'
@@ -88,6 +101,7 @@ stages:
     parameters:
       platform: Catalyst
       arch: x64
+      angleTag: ${{ variables.angleTag }}
 
 - stage: XCFramework
   displayName: 'Generate XCFramework'

@@ -1,5 +1,5 @@
 target_os = "ios"
-target_os_variation = "visionos"
+target_platform = "xros"
 is_component_build = false
 target_cpu = "x64"
 is_debug = false

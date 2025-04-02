@@ -1,17 +1,41 @@
 diff --git a/config/BUILDCONFIG.gn b/config/BUILDCONFIG.gn
-index b5c5cb75e..e2a433d2f 100644
+index a9d2caeb1..d4c1dc10e 100644
 --- a/config/BUILDCONFIG.gn
 +++ b/config/BUILDCONFIG.gn
-@@ -561,7 +561,7 @@ foreach(_target_type,
-       if (is_clang && (!defined(invoker.use_libcxx_modules) ||
+@@ -561,19 +561,19 @@ foreach(_target_type,
                         invoker.use_libcxx_modules)) {
          # This is necessary for Clang modules builds.
--        deps += [ "//buildtools/third_party/libc++:std" ]
-+        # deps += [ "//buildtools/third_party/libc++:std" ]
+         deps += [
+-          "//buildtools/third_party/libc++:std",
+-          "//buildtools/third_party/libc++:std_config",
+-          "//buildtools/third_party/libc++:std_core",
+-          "//buildtools/third_party/libc++:std_ctype_h",
+-          "//buildtools/third_party/libc++:std_errno_h",
+-          "//buildtools/third_party/libc++:std_fenv_h",
+-          "//buildtools/third_party/libc++:std_float_h",
+-          "//buildtools/third_party/libc++:std_inttypes_h",
+-          "//buildtools/third_party/libc++:std_math_h",
+-          "//buildtools/third_party/libc++:std_private_mbstate_t",
+-          "//buildtools/third_party/libc++:std_string_h",
+-          "//buildtools/third_party/libc++:std_uchar_h",
+-          "//buildtools/third_party/libc++:std_wctype_h",
++          # "//buildtools/third_party/libc++:std",
++          # "//buildtools/third_party/libc++:std_config",
++          # "//buildtools/third_party/libc++:std_core",
++          # "//buildtools/third_party/libc++:std_ctype_h",
++          # "//buildtools/third_party/libc++:std_errno_h",
++          # "//buildtools/third_party/libc++:std_fenv_h",
++          # "//buildtools/third_party/libc++:std_float_h",
++          # "//buildtools/third_party/libc++:std_inttypes_h",
++          # "//buildtools/third_party/libc++:std_math_h",
++          # "//buildtools/third_party/libc++:std_private_mbstate_t",
++          # "//buildtools/third_party/libc++:std_string_h",
++          # "//buildtools/third_party/libc++:std_uchar_h",
++          # "//buildtools/third_party/libc++:std_wctype_h",
+         ]
        }
  
-       # Consumed by the unsafe-buffers plugin during compile.
-@@ -652,10 +652,10 @@ foreach(_target_type,
+@@ -665,22 +665,22 @@ foreach(_target_type,
                         invoker.use_libcxx_modules)) {
          # These are necessary for Clang modules builds.
          deps += [
@@ -19,18 +43,42 @@ index b5c5cb75e..e2a433d2f 100644
 -          "//buildtools/third_party/libc++:_Builtin_stdarg",
 -          "//buildtools/third_party/libc++:_Builtin_stddef",
 -          "//buildtools/third_party/libc++:std",
+-          "//buildtools/third_party/libc++:std_config",
+-          "//buildtools/third_party/libc++:std_core",
+-          "//buildtools/third_party/libc++:std_ctype_h",
+-          "//buildtools/third_party/libc++:std_errno_h",
+-          "//buildtools/third_party/libc++:std_fenv_h",
+-          "//buildtools/third_party/libc++:std_float_h",
+-          "//buildtools/third_party/libc++:std_inttypes_h",
+-          "//buildtools/third_party/libc++:std_math_h",
+-          "//buildtools/third_party/libc++:std_private_mbstate_t",
+-          "//buildtools/third_party/libc++:std_string_h",
+-          "//buildtools/third_party/libc++:std_uchar_h",
+-          "//buildtools/third_party/libc++:std_wctype_h",
 +          # "//buildtools/third_party/libc++:_Builtin_limits",
 +          # "//buildtools/third_party/libc++:_Builtin_stdarg",
 +          # "//buildtools/third_party/libc++:_Builtin_stddef",
 +          # "//buildtools/third_party/libc++:std",
++          # "//buildtools/third_party/libc++:std_config",
++          # "//buildtools/third_party/libc++:std_core",
++          # "//buildtools/third_party/libc++:std_ctype_h",
++          # "//buildtools/third_party/libc++:std_errno_h",
++          # "//buildtools/third_party/libc++:std_fenv_h",
++          # "//buildtools/third_party/libc++:std_float_h",
++          # "//buildtools/third_party/libc++:std_inttypes_h",
++          # "//buildtools/third_party/libc++:std_math_h",
++          # "//buildtools/third_party/libc++:std_private_mbstate_t",
++          # "//buildtools/third_party/libc++:std_string_h",
++          # "//buildtools/third_party/libc++:std_uchar_h",
++          # "//buildtools/third_party/libc++:std_wctype_h",
          ]
        }
  
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index ae6cbc24e..ca562b137 100644
+index e7a60d56b..128db7840 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -1974,28 +1974,12 @@ config("default_warnings") {
+@@ -1982,12 +1982,6 @@ config("default_warnings") {
        cflags += [
          # TODO(crbug.com/330524456): -Wcast-function-type is under -Wextra now.
          "-Wno-cast-function-type",
@@ -43,23 +91,7 @@ index ae6cbc24e..ca562b137 100644
        ]
  
        cflags_cc += [
-         # TODO(crbug.com/328490295): Fix and re-enable for C flags.
-         "-Wenum-compare-conditional",
-       ]
--
--      if (!is_nacl) {
--        cflags_cc += [
--          # TODO(crbug.com/41486292): Fix and re-enable.
--          "-Wno-c++11-narrowing-const-reference",
--        ]
--
--        # TODO(crbug.com/344680447): Fix and re-enable.
--        cflags_cc += [ "-Wno-missing-template-arg-list-after-template-kw" ]
--      }
-     }
- 
-     # Some builders, such as Cronet, use a different version of Clang than
-@@ -2946,7 +2930,7 @@ config("symbols") {
+@@ -2967,7 +2961,7 @@ config("symbols") {
      configs += [ "//build/config:compress_debug_sections" ]
    }
  
@@ -69,10 +101,10 @@ index ae6cbc24e..ca562b137 100644
      # See: https://github.com/llvm/llvm-project/pull/87018.
      # The downside with this flag is precisely that: Unreferenced methods get
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index a3c560a62..8a912beb1 100644
+index a4db0c177..2a61db736 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
-@@ -257,6 +257,14 @@ group("xctest") {
+@@ -261,6 +261,14 @@ group("xctest") {
  _xctrunner_path =
      "$ios_sdk_platform_path/Developer/Library/Xcode/Agents/XCTRunner.app"
  
@@ -87,7 +119,7 @@ index a3c560a62..8a912beb1 100644
  # When building with RBE, $ios_sdk_platform_path corresponds to a symlink
  # below $root_build_dir that points to the real SDK to use. Because the files
  # are below $root_build_dir, it is not possible to list them as a target input
-@@ -270,15 +278,24 @@ _xctrunner_path =
+@@ -274,15 +282,24 @@ _xctrunner_path =
  # To workaround this, add a target that pretends to create those files
  # (but does nothing). See https://crbug.com/1061487 for why this is needed.
  if (ios_use_xcode_symlinks) {
@@ -116,7 +148,7 @@ index a3c560a62..8a912beb1 100644
  }
  
  # When creating the test runner for an XCUITest, the arm64e slice of the binary
-@@ -287,7 +304,7 @@ if (ios_use_xcode_symlinks) {
+@@ -291,7 +308,7 @@ if (ios_use_xcode_symlinks) {
  action("xctest_runner_without_arm64e") {
    testonly = true
    script = "//build/config/ios/strip_arm64e.py"
@@ -126,10 +158,10 @@ index a3c560a62..8a912beb1 100644
    args = [
      "--output",
 diff --git a/config/ios/rules.gni b/config/ios/rules.gni
-index cbc5f1986..635f9fff5 100644
+index 290c1f326..b417ec381 100644
 --- a/config/ios/rules.gni
 +++ b/config/ios/rules.gni
-@@ -1352,9 +1352,13 @@ template("ios_xcuitest_test_runner_bundle") {
+@@ -1358,9 +1358,13 @@ template("ios_xcuitest_test_runner_bundle") {
      testonly = true
      script = "//build/apple/plist_util.py"
  
@@ -145,7 +177,7 @@ index cbc5f1986..635f9fff5 100644
        # NOTE: The XCTRunnerAddition+Info.plist must come after the Info.plist
        # because it overrides the values under "CFBundleIdentifier" and
        # "CFBundleName".
-@@ -1399,7 +1403,11 @@ template("ios_xcuitest_test_runner_bundle") {
+@@ -1405,7 +1409,11 @@ template("ios_xcuitest_test_runner_bundle") {
      testonly = true
      visibility = [ ":$_target_name" ]
  

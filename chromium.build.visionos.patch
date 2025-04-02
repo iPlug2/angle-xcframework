@@ -1,8 +1,8 @@
 diff --git a/config/apple/codesign.py b/config/apple/codesign.py
-index be6afb5af..c6795656e 100644
+index 0c9298ed6..2c74b71ce 100644
 --- a/config/apple/codesign.py
 +++ b/config/apple/codesign.py
-@@ -91,6 +91,8 @@ class Bundle(object):
+@@ -102,6 +102,8 @@ class Bundle(object):
    def Kind(platform, extension):
      if platform in ('iphoneos', 'iphonesimulator'):
        return 'ios'
@@ -12,54 +12,62 @@ index be6afb5af..c6795656e 100644
        if extension == '.framework':
          return 'mac_framework'
 diff --git a/config/apple/mobile_config.gni b/config/apple/mobile_config.gni
-index 3c1219b32..6c269316e 100644
+index 48e80f216..f778ac967 100644
 --- a/config/apple/mobile_config.gni
 +++ b/config/apple/mobile_config.gni
-@@ -9,6 +9,7 @@ declare_args() {
-   # default is only there for compatibility reasons and will be removed (see
-   # crbug.com/1138425 for more details).
+@@ -8,6 +8,7 @@ declare_args() {
+   # Configure the environment for which to build. Could be either "device",
+   # "simulator" or "catalyst". Must be specified.
    target_environment = ""
 +  target_os_variation = ""
  
-   # Control whether codesiging is enabled (ignored for simulator builds).
-   # TODO(crbug.com/378918882): Prefix with apple_mobile_ instead of ios_.
+   # Valid values: "iphoneos" (default), "tvos", "watchos".
+   # Indicates the kind of iOS or iOS-based platform that is being targeted.
+@@ -75,6 +76,7 @@ if (is_ios || is_watchos) {
+     _target_platforms += [
+       "iphoneos",
+       "tvos",
++      "xros",
+     ]
+   } else if (is_watchos) {
+     _target_platforms += [
 diff --git a/config/apple/sdk_info.py b/config/apple/sdk_info.py
-index 3308c10a9..563616648 100755
+index bbadc1247..8f06db59d 100755
 --- a/config/apple/sdk_info.py
 +++ b/config/apple/sdk_info.py
-@@ -136,7 +136,7 @@ def main():
-   parser.add_argument('platform',
-                       choices=[
-                           'iphoneos', 'iphonesimulator', 'macosx', 'watchos',
--                          'watchsimulator'
-+                          'watchsimulator', 'xros', 'xrsimulator'
+@@ -141,6 +141,8 @@ def main():
+                           'macosx',
+                           'watchos',
+                           'watchsimulator',
++                          'xros',
++                          'xrsimulator',
                        ])
    args = parser.parse_args()
    if args.developer_dir:
 diff --git a/config/clang/BUILD.gn b/config/clang/BUILD.gn
-index f27d52c3b..1ddf4cc77 100644
+index ec77c17dc..e6e13a88a 100644
 --- a/config/clang/BUILD.gn
 +++ b/config/clang/BUILD.gn
-@@ -216,7 +216,13 @@ clang_lib("compiler_builtins") {
-   if (is_mac) {
-     libname = "osx"
-   } else if (is_ios) {
--    if (target_environment == "simulator") {
-+    if (target_os_variation == "visionos") {
+@@ -273,6 +273,14 @@ clang_lib("compiler_builtins") {
+       } else {
+         assert(false, "unsupported target_environment=$target_environment")
+       }
++    } else if (target_platform == "xros") {
 +      if (target_environment == "simulator") {
 +        libname = "xrossim"
-+      } else {
++      } else if (target_environment == "device") {
 +        libname = "xros"
++      } else {
++        assert(false, "unsupported target_environment=$target_environment")
 +      }
-+    } else if (target_environment == "simulator") {
-       libname = "iossim"
-     } else if (target_environment == "catalyst") {
-       libname = "osx"
+     } else {
+       assert(false, "unsupported target_platform=$target_platform")
+     }
 diff --git a/config/compiler/BUILD.gn b/config/compiler/BUILD.gn
-index fccd8daec..065eb3462 100644
+index 128db7840..66e6206f7 100644
 --- a/config/compiler/BUILD.gn
 +++ b/config/compiler/BUILD.gn
-@@ -591,24 +591,6 @@ config("compiler") {
+@@ -590,24 +590,6 @@ config("compiler") {
        }
      }
  
@@ -84,7 +92,7 @@ index fccd8daec..065eb3462 100644
      # TODO(crbug.com/40192287): Investigate why/if this should be needed.
      if (is_win) {
        cflags += [ "/clang:-ffp-contract=off" ]
-@@ -1927,6 +1909,7 @@ config("default_warnings") {
+@@ -1937,6 +1919,7 @@ config("default_warnings") {
        # Disables.
        "-Wno-missing-field-initializers",  # "struct foo f = {0};"
        "-Wno-unused-parameter",  # Unused function parameters.
@@ -93,32 +101,27 @@ index fccd8daec..065eb3462 100644
  
      cflags_cc += [
 diff --git a/config/ios/BUILD.gn b/config/ios/BUILD.gn
-index 8a912beb1..cf7f711d2 100644
+index 2a61db736..c39e2dadf 100644
 --- a/config/ios/BUILD.gn
 +++ b/config/ios/BUILD.gn
-@@ -42,7 +42,11 @@ config("compiler") {
+@@ -46,6 +46,8 @@ config("compiler") {
+     triplet_os = "apple-ios"
+   } else if (target_platform == "tvos") {
+     triplet_os = "apple-tvos"
++  } else if (target_platform == "xros") {
++    triplet_os = "apple-xros"
    }
  
-   # OS.
--  triplet_os = "apple-ios"
-+  if (target_os_variation == "visionos") {
-+    triplet_os = "apple-xros"
-+  } else {
-+    triplet_os = "apple-ios"
-+  }
- 
    # Set target.
-   common_flags = [
 diff --git a/config/ios/ios_sdk.gni b/config/ios/ios_sdk.gni
-index 448f82718..b7641a183 100644
+index ff28e7e7d..dcde22dce 100644
 --- a/config/ios/ios_sdk.gni
 +++ b/config/ios/ios_sdk.gni
-@@ -63,7 +63,17 @@ ios_use_xcode_symlinks =
- 
- if (ios_sdk_path == "") {
-   # Compute default target.
--  if (target_environment == "simulator") {
-+  if (target_os_variation == "visionos") {
+@@ -86,6 +86,16 @@ if (ios_sdk_path == "") {
+     } else {
+       assert(false, "unsupported target_environment=$target_environment")
+     }
++  } else if (target_platform == "xros") {
 +    if (target_environment == "simulator") {
 +      ios_sdk_name = "xrsimulator"
 +      ios_sdk_platform = "XRSimulator"
@@ -128,15 +131,49 @@ index 448f82718..b7641a183 100644
 +    } else {
 +      assert(false, "unsupported environment: $target_environment")
 +    }
-+  } else if (target_environment == "simulator") {
-     ios_sdk_name = "iphonesimulator"
-     ios_sdk_platform = "iPhoneSimulator"
-   } else if (target_environment == "device") {
+   } else {
+     assert(false, "unsupported target_platform=$target_platform")
+   }
+diff --git a/config/rust.gni b/config/rust.gni
+index 74b3b9ced..28ee4ae50 100644
+--- a/config/rust.gni
++++ b/config/rust.gni
+@@ -289,6 +289,16 @@ if (is_linux || is_chromeos) {
+       } else {
+         assert(false, "unsupported target_environment=$target_environment")
+       }
++    } else if (target_platform == "xros") {
++      if (target_environment == "simulator") {
++        rust_abi_target = "aarch64-apple-xros-sim"
++        cargo_target_abi = "sim"
++      } else if (target_environment == "device") {
++        rust_abi_target = "aarch64-apple-xros"
++        cargo_target_abi = "sim"
++      } else {
++        assert(false, "unsupported target_environment=$target_environment")
++      }
+     } else {
+       assert(false, "unsupported target_platform=$target_platform")
+     }
+@@ -313,6 +323,13 @@ if (is_linux || is_chromeos) {
+       } else {
+         assert(false, "unsupported target_environment=$target_environment")
+       }
++    } else if (target_platform == "xros") {
++      if (target_environment == "simulator") {
++        rust_abi_target = "x86_64-apple-xros-sim"
++        cargo_target_abi = "sim"
++      } else {
++        assert(false, "unsupported target_environment=$target_environment")
++      }
+     } else {
+       assert(false, "unsupported target_platform=$target_platform")
+     }
 diff --git a/toolchain/apple/toolchain.gni b/toolchain/apple/toolchain.gni
-index 5cf427c25..d35cceebe 100644
+index 384375fbd..486ed32cb 100644
 --- a/toolchain/apple/toolchain.gni
 +++ b/toolchain/apple/toolchain.gni
-@@ -450,7 +450,7 @@ template("single_apple_toolchain") {
+@@ -459,7 +459,7 @@ template("single_apple_toolchain") {
          command = "rm -f {{output}} && TOOL_VERSION=${tool_versions.filter_libtool} $python_path $script $libtool -static -D {{arflags}} -o {{output}} @$rspfile"
          description = "LIBTOOL-STATIC {{output}}"
        } else {

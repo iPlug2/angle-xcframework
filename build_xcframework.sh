@@ -40,6 +40,14 @@ build_xcframwork()
   mv temp VisionOSSimulator/Universal/$1.framework/$1
   mv temp.dSYM VisionOSSimulator/Universal/$1.dSYM/Contents/Resources/DWARF/$1
 
+  mkdir -p TVOSSimulator/Universal
+  cp -a TVOSSimulator/x64/$1.framework TVOSSimulator/Universal
+  cp -a TVOSSimulator/x64/$1.dSYM TVOSSimulator/Universal
+  lipo -create TVOSSimulator/arm64/$1.framework/$1 TVOSSimulator/x64/$1.framework/$1 -o temp
+  lipo -create TVOSSimulator/arm64/$1.dSYM/Contents/Resources/DWARF/$1 TVOSSimulator/x64/$1.dSYM/Contents/Resources/DWARF/$1 -o temp.dSYM
+  mv temp TVOSSimulator/Universal/$1.framework/$1
+  mv temp.dSYM TVOSSimulator/Universal/$1.dSYM/Contents/Resources/DWARF/$1
+
   if [ "$1" = "libEGL" ]; then
     cp PrivacyInfo.xcprivacy iOS/arm64/$1.framework
     cp PrivacyInfo.xcprivacy VisionOS/arm64/$1.framework
@@ -48,6 +56,8 @@ build_xcframwork()
   xcodebuild -create-xcframework -framework `pwd`/iOS/arm64/$1.framework \
                                  -framework `pwd`/VisionOS/arm64/$1.framework \
                                  -framework `pwd`/VisionOSSimulator/Universal/$1.framework \
+                                 -framework `pwd`/TVOS/arm64/$1.framework \
+                                 -framework `pwd`/TVOSSimulator/Universal/$1.framework \
                                  -framework `pwd`/Catalyst/Universal/$1.framework \
                                  -framework `pwd`/Simulator/Universal/$1.framework \
                                  -framework `pwd`/Mac/Universal/$1.framework \

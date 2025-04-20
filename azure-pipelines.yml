@@ -89,6 +89,33 @@ stages:
       platform: Catalyst
       arch: x64
 
+- stage: tvOS
+  displayName: 'tvOS'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: TVOS
+      arch: arm64
+
+- stage: tvOSSimulatorARM64
+  displayName: 'tvOS Simulator (arm64)'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: TVOSSimulator
+      arch: arm64
+
+- stage: tvOSSimulatorX64
+  displayName: 'tvOS Simulator (x64)'
+  dependsOn: []
+  jobs:
+  - template: jobs/build.yml
+    parameters:
+      platform: TVOSSimulator
+      arch: x64
+
 - stage: XCFramework
   displayName: 'Generate XCFramework'
   dependsOn:
@@ -102,5 +129,8 @@ stages:
   - MacX64
   - CatalystARM64
   - CatalystX64
+  - tvOS
+  - tvOSSimulatorARM64
+  - tvOSSimulatorX64
   jobs:
   - template: jobs/xcframework.yml

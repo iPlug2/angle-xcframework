@@ -69,6 +69,24 @@ jobs:
       artifactName: 'Catalyst.x64'
       downloadPath: '$(System.DefaultWorkingDirectory)'
 
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download tvOS Artifacts'
+    inputs:
+      artifactName: 'TVOS.arm64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download tvOS Simulator (arm64) Artifacts'
+    inputs:
+      artifactName: 'TVOSSimulator.arm64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
+  - task: DownloadBuildArtifacts@0
+    displayName: 'Download tvOS Simulator (x64) Artifacts'
+    inputs:
+      artifactName: 'TVOSSimulator.x64'
+      downloadPath: '$(System.DefaultWorkingDirectory)'
+
   - script: |
       sudo xcode-select -s /Applications/Xcode_$(xcodeVersion).app
       tar -xzvf iOS.arm64/angle.tar.gz
@@ -81,6 +99,9 @@ jobs:
       tar -xzvf Mac.x64/angle.tar.gz
       tar -xzvf Catalyst.arm64/angle.tar.gz
       tar -xzvf Catalyst.x64/angle.tar.gz
+      tar -xzvf TVOS.arm64/angle.tar.gz
+      tar -xzvf TVOSSimulator.arm64/angle.tar.gz
+      tar -xzvf TVOSSimulator.x64/angle.tar.gz
       chmod +x build_xcframework.sh
       cp PrivacyInfo.xcprivacy out/
       cp build_xcframework.sh out/

@@ -1,34 +1,28 @@
 diff --git a/BUILD.gn b/BUILD.gn
-index 7fe98fd91e..6276804c74 100644
+index 07e1268a57..3e4c1710ba 100644
 --- a/BUILD.gn
 +++ b/BUILD.gn
-@@ -707,19 +707,22 @@ angle_static_library("angle_gpu_info_util") {
+@@ -707,17 +707,17 @@ angle_static_library("angle_gpu_info_util") {
  
    if (is_apple) {
      frameworks = [
--      "IOKit.framework",
 +      "Foundation.framework",
        "CoreFoundation.framework",
        "CoreGraphics.framework",
      ]
-+    if (is_mac || (is_ios && target_platform != "tvos")) {
-+      frameworks += [ "IOKit.framework" ]
-+    }
      if (angle_enable_cgl) {
        frameworks += [ "OpenGL.framework" ]
      }
 -    if (is_mac || angle_enable_cgl) {
-+    if (is_mac || angle_enable_cgl || (is_ios && target_environment == "catalyst")) {
++    if (is_mac || (is_ios && target_environment == "catalyst") || angle_enable_cgl) {
+       frameworks += [ "IOKit.framework" ]
        sources += libangle_gpu_info_util_mac_sources
 -    }
 -    if (is_ios && !angle_enable_cgl) {
 +    } else if (is_ios) {
        sources += libangle_gpu_info_util_ios_sources
      }
-+    defines += [ "GL_SILENCE_DEPRECATION" ]
    }
- }
- 
 diff --git a/src/common/system_utils.cpp b/src/common/system_utils.cpp
 index 740384eaf0..18de3eeec2 100644
 --- a/src/common/system_utils.cpp

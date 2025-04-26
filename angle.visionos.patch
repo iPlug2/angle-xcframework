@@ -1,5 +1,5 @@
 diff --git a/src/common/apple/apple_platform.h b/src/common/apple/apple_platform.h
-index cee7b44d6..718c9b9f8 100644
+index cee7b44d61..718c9b9f8f 100644
 --- a/src/common/apple/apple_platform.h
 +++ b/src/common/apple/apple_platform.h
 @@ -18,7 +18,8 @@
@@ -13,10 +13,10 @@ index cee7b44d6..718c9b9f8 100644
  #    define ANGLE_HAVE_MTLRESOURCE_SET_OWNERSHIP_IDENTITY 1
  #else
 diff --git a/src/common/platform.h b/src/common/platform.h
-index 16eb8ddcd..610c9eeda 100644
+index 48d6c5dfa7..07bc78c59f 100644
 --- a/src/common/platform.h
 +++ b/src/common/platform.h
-@@ -152,6 +152,8 @@
+@@ -149,6 +149,8 @@
  #                error tvOS 17 SDK or newer is required.
  #            endif
  #            define ANGLE_PLATFORM_APPLETV 1
@@ -25,3 +25,16 @@ index 16eb8ddcd..610c9eeda 100644
  #        endif
  #    endif
  #endif
+diff --git a/src/libANGLE/renderer/metal/DisplayMtl.mm b/src/libANGLE/renderer/metal/DisplayMtl.mm
+index 7cdf6bcef3..a74fd6278f 100644
+--- a/src/libANGLE/renderer/metal/DisplayMtl.mm
++++ b/src/libANGLE/renderer/metal/DisplayMtl.mm
+@@ -1373,7 +1373,7 @@ bool DisplayMtl::supports32BitFloatFiltering() const
+ 
+ bool DisplayMtl::supportsBCTextureCompression() const
+ {
+-    if (@available(macCatalyst 16.4, iOS 16.4, *))
++    if (@available(macCatalyst 16.4, iOS 16.4, tvOS 16.4, visionOS 1.0, *))
+     {
+         return [mMetalDevice supportsBCTextureCompression];
+     }

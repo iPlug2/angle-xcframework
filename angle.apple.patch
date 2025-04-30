@@ -79,6 +79,20 @@ index 5cef5d49ee..030d0ccad6 100644
  // Get VendorID from metal device's registry ID
  VendorID GetVendorIDFromMetalDeviceRegistryID(uint64_t registryID);
  #endif
+diff --git a/src/libANGLE/renderer/metal/metal_backend.gni b/src/libANGLE/renderer/metal/metal_backend.gni
+index ef8c6ad9f4..6f32c518d6 100644
+--- a/src/libANGLE/renderer/metal/metal_backend.gni
++++ b/src/libANGLE/renderer/metal/metal_backend.gni
+@@ -90,8 +90,7 @@ metal_backend_sources = [
+ # We can build the ANGLE internal shaders at build-time if we have access to the Mac SDK in the "build" dir.
+ # Building internal shaders for iOS is not supported. The Chromium Mac SDK does not have all the required files.
+ # This is also an issue when cross-compiling for mac.
+-metal_internal_shader_compilation_supported =
+-    angle_has_build && !is_ios && target_os == host_os
++metal_internal_shader_compilation_supported = true
+ 
+ metal_internal_shaders_header =
+     "$root_gen_dir/angle/mtl_internal_shaders_metallib.h"
 diff --git a/src/libGLESv2.gni b/src/libGLESv2.gni
 index 16ff4f6e9d..4258a09d5d 100644
 --- a/src/libGLESv2.gni
